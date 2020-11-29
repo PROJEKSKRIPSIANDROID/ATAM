@@ -37,7 +37,7 @@ class LoginScreen extends StatelessWidget{
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(
-                            builder: (context){return MainMenu();},
+                            builder: (context){return BottomNavBar();},
                         ),
                     );
                   },
