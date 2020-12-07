@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mattendance/Pages/attendance_history_screen.dart';
+import 'package:mattendance/Pages/home_page.dart';
+import 'package:mattendance/Pages/profile_page.dart';
 
 class BottomNavBar extends StatefulWidget{
   @override
@@ -7,10 +10,10 @@ class BottomNavBar extends StatefulWidget{
 
 class _BottomNavScreenState extends State<BottomNavBar>{
   final List screens = [
+    HomePage(),
     Scaffold(),
-    Scaffold(),
-    Scaffold(),
-    Scaffold()
+    AttendanceHistory(),
+    ProfileScreen()
   ];
 
   int currIndex = 0;
@@ -27,8 +30,8 @@ class _BottomNavScreenState extends State<BottomNavBar>{
         showUnselectedLabels: false,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
-        elevation: 0.0,
-        items: [Icons.home, Icons.notifications_rounded, Icons.business_center, Icons.assignment_ind]
+        elevation: 10,
+        items: [Icons.home, Icons.notifications_rounded, Icons.business_center, Icons.person]
             .asMap()
             .map((key, value) => MapEntry(
           key, BottomNavigationBarItem(
@@ -42,11 +45,28 @@ class _BottomNavScreenState extends State<BottomNavBar>{
               color: currIndex == key ? Colors.blue[600] : Colors.transparent,
               borderRadius: BorderRadius.circular(20.0),
             ),
-            child: Icon(value),
+            child: Column(
+              children: <Widget>[
+                Icon(value),
+                if (key == 0)
+                  Text("Home",
+                  style: TextStyle(fontSize: 10,color: currIndex == 0 ? Colors.white : Colors.grey))
+                else if (key == 1)
+                  Text("Notification",
+                      style: TextStyle(fontSize: 10,color: currIndex == 1 ? Colors.white : Colors.grey))
+                else if (key == 2)
+                  Text("Office",
+                      style: TextStyle(fontSize: 10,color: currIndex == 2 ? Colors.white : Colors.grey))
+                else if (key == 3)
+                  Text("Profile",
+                      style: TextStyle(fontSize: 10,color: currIndex == 3 ? Colors.white : Colors.grey))
+              ],
+            ),
           ),
         ),
         )).values.toList(),
       ),
     );
   }
+
 }

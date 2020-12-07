@@ -1,7 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/main_menu.dart';
+import 'package:mattendance/main.dart';
 
-class LoginScreen extends StatelessWidget{
+//class MyApp extends StatelessWidget {
+//  @override
+//  Widget build(BuildContext context) {
+//    return new MaterialApp(
+//      title: 'Example',
+//      // Routes
+//      routes: <String, WidgetBuilder>{
+//        '/': (_) => new Login(), // Login Page
+//        '/home': (_) => new Home(), // Home Page
+//        '/signUp': (_) => new SignUp(), // The SignUp page
+//        '/forgotPassword': (_) => new ForgotPwd(), // Forgot Password Page
+//        '/screen1':(_) => new Screen1(), // Any View to be navigated from home
+//      },
+//    );
+//  }
+//}
+
+class LoginScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => new _LoginScreen();
+}
+
+class _LoginScreen extends State<LoginScreen>{
+  String _status = 'no-action';
+
   @override
   Widget build(BuildContext context){
     Size size = MediaQuery.of(context).size;
@@ -18,13 +43,23 @@ class LoginScreen extends StatelessWidget{
             ),
             BoxFieldContainer(
               child: TextField(
-                decoration: InputDecoration(hintText: "Email"),
+                decoration: InputDecoration(
+                    hintText: "Email",
+                    icon: Icon(
+                      Icons.person,
+                      color: Colors.blue[600],
+                    )),
               )
             ),
             BoxFieldContainer(
               child: TextField(
                 obscureText: true,
-                decoration: InputDecoration(hintText: "Password")
+                decoration: InputDecoration(
+                    hintText: "Password",
+                    icon: Icon(
+                      Icons.lock_rounded,
+                      color: Colors.blue[600]
+                ))
               )
             ),
             Container(
@@ -35,11 +70,15 @@ class LoginScreen extends StatelessWidget{
                   padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
                   color: Colors.blue,
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(
-                            builder: (context){return BottomNavBar();},
-                        ),
-                    );
+                    setState(() => this._status = 'loading');
+
+                    appAuth.login().then((result) {
+                      if (result) {
+                        Navigator.of(context).pushReplacementNamed('/home');
+                      } else {
+                        setState(() => this._status = 'rejected');
+                      }
+                    });
                   },
                   child: Text(
                       "LOGIN",
