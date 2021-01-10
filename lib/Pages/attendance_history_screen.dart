@@ -13,8 +13,27 @@ class _AttendanceHistory extends State<AttendanceHistory>{
     super.initState();
     _controller = CalendarController();
   }
+
+  DateTime _selectedDay = DateTime.now();
+
+  void onDaySelected(DateTime day) {
+    setState(() {
+      _selectedDay = day;
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Color.fromRGBO(255, 240, 245, 10),
+          title: Row(
+            children: <Widget>[
+              Text("Attendance History",
+                style: TextStyle(color: Colors.black),
+              )
+            ],
+          )
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,7 +41,7 @@ class _AttendanceHistory extends State<AttendanceHistory>{
             TableCalendar(
               initialCalendarFormat: CalendarFormat.week,
               calendarController: _controller,
-            startingDayOfWeek: StartingDayOfWeek.monday,
+              startingDayOfWeek: StartingDayOfWeek.monday,
             ),
         Container(
           padding: EdgeInsets.fromLTRB(10, 10, 10, 10),

@@ -37,9 +37,19 @@ class _LoginScreen extends State<LoginScreen>{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-                "LOGIN",
-                style: TextStyle(fontWeight: FontWeight.bold),
+            Image.asset(
+              'assets/Logo_AdIns2019_Colour.png',
+              height: 150,
+              width: 1000,),
+            Container(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
+              child: Text(
+                "M-Attendance",
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
             ),
             BoxFieldContainer(
               child: TextField(
@@ -64,6 +74,7 @@ class _LoginScreen extends State<LoginScreen>{
             ),
             Container(
               width: size.width * 0.8,
+              padding: EdgeInsets.all(15),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(29),
                 child: FlatButton(

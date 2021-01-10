@@ -33,7 +33,7 @@ void main() async {
 
   // Run app!
   runApp(new MaterialApp(
-    title: 'App',
+    title: 'M-Attendance',
     home: _defaultHome,
     routes: <String, WidgetBuilder>{
       // Set routes for using the Navigator.

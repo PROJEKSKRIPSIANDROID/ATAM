@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'file:///D:/Workspace/Skripsi/m_attendance/lib/Pages/OfficeManagement/office_management.dart';
+import 'package:mattendance/main.dart';
 
 class ProfileScreen extends StatelessWidget {
   @override
@@ -40,22 +43,53 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
 
-          Container(),
           Container(
             width: 360,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(29),
-              color: Colors.blue[600]
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(29),
+                child: FlatButton(
+                  color: Colors.blue[600],
+                  padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  child: Text('Client Office Management',style: TextStyle(color: Colors.white,fontSize: 20),),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => OfficeManagement()));//authenticationBloc.dispatch(LoggedOut());
+                  },
+                )
             ),
-            child: Center(
+          ),
+
+          Container(
+            width: 360,
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(29),
               child: FlatButton(
+                color: Colors.blue[600],
+                padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
                 child: Text('Sign Out',style: TextStyle(color: Colors.white,fontSize: 20),),
                 onPressed: (){
-                  //authenticationBloc.dispatch(LoggedOut());
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => CupertinoAlertDialog(
+                        title: Text("Sign Out?"),
+                        content: Text("Are you sure you want to sign out?"),
+                        actions: [
+                          CupertinoDialogAction(
+                            child: Text("No"),
+                            onPressed: () {Navigator.of(context).pop();},),
+                          CupertinoDialogAction(
+                            child: Text("Yes"),
+                          onPressed: () {
+                            appAuth.logout().then(
+                                    (_) => Navigator.of(context).pushReplacementNamed('/login'));
+                          })
+                        ],
+                    )
+                  );                   //authenticationBloc.dispatch(LoggedOut());
                 },
               )
-            )
-            ,
+            ),
           )
         ],
       ),
