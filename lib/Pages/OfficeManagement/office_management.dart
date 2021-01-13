@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/OfficeManagement/OfficeManagementServices.dart';
-import 'file:///D:/Workspace/Skripsi/m_attendance/lib/Pages/OfficeManagement/add_edit_office.dart';
+import 'file:///D:/Skripsi Ghifari/aplikasi/ATAM//lib/Pages/OfficeManagement/add_edit_office.dart';
 
 class OfficeManagement extends StatefulWidget {
   final List<Offices> listOffice = [

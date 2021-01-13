@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'file:///D:/Workspace/Skripsi/m_attendance/lib/Pages/OfficeManagement/office_management.dart';
+import 'file:///D:/Skripsi Ghifari/aplikasi/ATAM/lib/Pages/OfficeManagement/office_management.dart';
 import 'package:mattendance/main.dart';
 
 class ProfileScreen extends StatelessWidget {
