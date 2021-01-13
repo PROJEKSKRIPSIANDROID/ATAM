@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mattendance/Pages/OfficeManagement/OfficeManagementServices.dart';
+import 'package:mattendance/model/officeDataModel.dart';
 
 //class AddEditOffice extends StatefulWidget {
 //  final String pageTitle;
@@ -27,11 +28,13 @@ import 'package:mattendance/Pages/OfficeManagement/OfficeManagementServices.dart
 
 class AddEditOffice extends StatefulWidget {
   final String pageTitle;
-
+  final ValueChanged<ClientOffice> onChanged;
   const AddEditOffice({
     @required this.pageTitle,
+    @required this.onChanged,
     Key key,
   })  : assert(pageTitle != null),
+        assert(onChanged != null),
         super(key: key);
 
   @override
@@ -39,8 +42,9 @@ class AddEditOffice extends StatefulWidget {
 }
 
 class AddEditOfficeState extends State<AddEditOffice> {
+  ClientOffice _clientOffice;
   GoogleMapController mapController;
-
+  final Set<Marker> _markers = {};
   final TextEditingController officeNameController = TextEditingController();
   final TextEditingController addressNameController = TextEditingController();
   String testing = 'AddOffice';
@@ -56,7 +60,20 @@ class AddEditOfficeState extends State<AddEditOffice> {
                 style: TextStyle(color: Colors.black),
               )
             ],
-          )
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 0.0, 8.0, 0.0),
+              child: IconButton(
+                icon: Text("Save",style: TextStyle(color: Colors.black),),
+                onPressed: () {
+                  widget.onChanged(_clientOffice);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+
       ),
       body: GestureDetector(
         onTap: () {
@@ -71,8 +88,8 @@ class AddEditOfficeState extends State<AddEditOffice> {
   @override
   void initState() {
     if(testing == 'AddOffice'){
-      officeNameController.text = _place.name;
-      addressNameController.text = _place.description;
+      officeNameController.text = 'test';
+      addressNameController.text = 'test';
     }
 
     return super.initState();
@@ -86,7 +103,7 @@ class AddEditOfficeState extends State<AddEditOffice> {
           controller: officeNameController,
           onChanged: (value) {
             setState(() {
-              _place = _place.copyWith(name: value);
+              _clientOffice = _clientOffice.copyWith(clientOfficeName: value);
             });
           },
         ),
@@ -94,13 +111,13 @@ class AddEditOfficeState extends State<AddEditOffice> {
           controller: addressNameController,
           onChanged: (value) {
             setState(() {
-              _place = _place.copyWith(description: value);
+              _clientOffice = _clientOffice.copyWith(clientOfficeAddress: value);
             });
           },
         ),
         MapField(
-          center: LatLng(position.latitude,  position.longitude),
-          mapController: _mapController,
+          center: null,
+          mapController: mapController,
           onMapCreated: _onMapCreated,
           markers: _markers,
         ),
@@ -112,8 +129,8 @@ class AddEditOfficeState extends State<AddEditOffice> {
     mapController = controller;
     setState(() {
       _markers.add(Marker(
-        markerId: MarkerId(_place.latLng.toString()),
-        position: _place.latLng,
+        markerId: MarkerId(null),
+        position: null,
       ));
     });
   }

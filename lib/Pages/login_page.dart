@@ -37,76 +37,97 @@ class _LoginScreen extends State<LoginScreen>{
     return Scaffold(
       body: Form(
           key: _formKey,
-          //width: double.infinity,
-          //height: size.height,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            //key: _formKey,
-            children: <Widget>[
-              Text(
-                "LOGIN",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              TextFormField(
-                //child: TextField(
-                validator: (input){
-                  if (input.isEmpty){
-                    return 'Please type an email';
-                  }
-                  return null;
-                } ,
-                onSaved: (input) => _email = input,
-                decoration: InputDecoration(
-                    hintText: "Email",
-                    icon: Icon(
-                      Icons.person,
-                      color: Colors.blue[600],
-                    )),
-                // )
-              ),
-              TextFormField(
-                //child: TextField(
-                  validator: (input){
-                    if(input.length < 8){
-                      return 'Your password less than 8 characters';
-                    }
-                    return null;
-                  },
-                  onSaved: (input) => _password = input,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                      hintText: "Password",
-                      icon: Icon(
-                          Icons.lock_rounded,
-                          color: Colors.blue[600]
-                      ))
-                // )
-              ),
-              Container(
-                width: size.width * 0.8,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(29),
-                  child: FlatButton(
-                    padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-                    color: Colors.blue,
-                    onPressed: signIn /*() {
-                    setState(() => this._status = 'loading');
-
-                    appAuth.login().then((result) {
-                      if (result) {
-                        Navigator.of(context).pushReplacementNamed('/home');
-                      } else {
-                        setState(() => this._status = 'rejected');
-                      }
-                    });
-                  }*/,
+          child: Container(
+            padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
+            width: double.infinity,
+            height: size.height,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/Logo_AdIns2019_Colour.png',
+                    height: 150,
+                    width: 1000,),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
                     child: Text(
-                      "LOGIN",
-                      style: TextStyle(color:Colors.white),
-                    ),),
-                ),
-              )
-            ],
+                      "M-Attendance",
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "LOGIN",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  BoxFieldContainer(
+                    child: TextFormField(
+                      //child: TextField(
+                      validator: (input){
+                        if (input.isEmpty){
+                          return 'Please type an email';
+                        }
+                        return null;
+                      } ,
+                      onSaved: (input) => _email = input,
+                      decoration: InputDecoration(
+                          hintText: "Email",
+                          icon: Icon(
+                            Icons.person,
+                            color: Colors.blue[600],
+                          )),
+                      // )
+                    ),
+                  ),
+                  BoxFieldContainer(
+                    child: TextFormField(
+                        validator: (input){
+                          if(input.length < 8){
+                            return 'Your password less than 8 characters';
+                          }
+                          return null;
+                        },
+                        onSaved: (input) => _password = input,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                            hintText: "Password",
+                            icon: Icon(
+                                Icons.lock_rounded,
+                                color: Colors.blue[600]
+                            ))
+                      // )
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(29),
+                      child: FlatButton(
+                        padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                        color: Colors.blue,
+                        onPressed: signIn /*() {
+                      setState(() => this._status = 'loading');
+
+                      appAuth.login().then((result) {
+                        if (result) {
+                          Navigator.of(context).pushReplacementNamed('/home');
+                        } else {
+                          setState(() => this._status = 'rejected');
+                        }
+                      });
+                    }*/,
+                        child: Text(
+                          "LOGIN",
+                          style: TextStyle(color:Colors.white),
+                        ),),
+                    ),
+                  )
+                ],
+              ),
+            ),
           )
       ),
     );
