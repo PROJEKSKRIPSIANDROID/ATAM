@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/OfficeManagement/office_management.dart';
 import 'package:mattendance/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatelessWidget {
   @override
@@ -81,7 +82,7 @@ class ProfileScreen extends StatelessWidget {
                           CupertinoDialogAction(
                             child: Text("Yes"),
                           onPressed: () {
-                            appAuth.logout().then(
+                            FirebaseAuth.instance.signOut().then(
                                     (_) => Navigator.of(context).pushReplacementNamed('/login'));
                           })
                         ],

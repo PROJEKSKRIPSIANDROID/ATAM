@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/attendance_history_screen.dart';
 import 'package:mattendance/Pages/home_page.dart';
 import 'package:mattendance/Pages/profile_page.dart';
+import 'Package:mattendance/Pages/RequestAbsence/request_absence_page.dart';
+import 'Package:mattendance/Pages/notifications.dart';
 
 class BottomNavBar extends StatefulWidget{
   @override
@@ -11,7 +13,7 @@ class BottomNavBar extends StatefulWidget{
 class _BottomNavScreenState extends State<BottomNavBar>{
   final List screens = [
     HomePage(),
-    Scaffold(),
+    AbsenceApproval(),
     AttendanceHistory(),
     ProfileScreen()
   ];
@@ -52,7 +54,7 @@ class _BottomNavScreenState extends State<BottomNavBar>{
                   Text("Home",
                   style: TextStyle(fontSize: 10,color: currIndex == 0 ? Colors.white : Colors.grey))
                 else if (key == 1)
-                  Text("Notification",
+                  Text("Request Absence",
                       style: TextStyle(fontSize: 10,color: currIndex == 1 ? Colors.white : Colors.grey))
                 else if (key == 2)
                   Text("Office",
