@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -115,9 +114,10 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
   }
 
   void addToReqAbsence() {
-    FirebaseAuth _auth = FirebaseAuth.instance;
+
     FirebaseFirestore _db = FirebaseFirestore.instance;
     FirebaseFirestore _db2 = FirebaseFirestore.instance;
+    FirebaseAuth _auth = FirebaseAuth.instance;
     final user = _auth.currentUser;
     String reqReason = selectedName.toString();
     DateTime reqDate = _controller.selectedDay;
@@ -131,14 +131,34 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
       QuerySnapshot uname = await _db2.collection("users").where("user_id", isEqualTo: user.uid).get();
       return uname.docs;
     }*/
+    final uid =  FirebaseAuth.instance.currentUser.uid;
+    getName() async {
+      final uid = await FirebaseAuth.instance.currentUser.uid;
+      QuerySnapshot uname = await _db
+          .collection("users")
+          .where("user_id", isEqualTo: uid)
+          .get();
+      return uname.docs;
+    }
 
-    //String uname = _db2.collection("users").where("user_id", isEqualTo: user.uid).get().toString();
-    _db.collection('request_absence').doc().set(
+ /*   String name = user.uid.toString();
+    String uname = _db2.collection("users").where("user_id", isEqualTo: name).get().toString();*/
+
+    String name = user.uid.toString();
+  _db2.collection('users').doc(uid).collection('request_absence').add({
+   // 'username':_db2.collection("users").where("user_id", isEqualTo: name).get(),
+    'request_date': reqDate,
+    'status': 'waiting',
+    'reason':reqReason,
+  });
+
+/*    _db.collection('request_absence').doc().set(
         {
+          'username':getName(),
           'user_id': user.uid,
           'request_date': reqDate,
           'status': 'waiting',
           'reason':reqReason,
-        });
+        });*/
   }
 }

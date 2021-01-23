@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/attendance_history_screen.dart';
+import 'package:mattendance/Pages/employee_main_menu.dart';
 import 'package:mattendance/Pages/home_page.dart';
 import 'package:mattendance/Pages/login_page.dart';
 import 'package:mattendance/Pages/main_menu.dart';
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
                 if(user['position'] == 'deptHead'){
                   return BottomNavBar();
                 }else{
-                  return AttendanceHistory();
+                  return EmployeeMainMenu();
                 }
               }else {
                 return Material(

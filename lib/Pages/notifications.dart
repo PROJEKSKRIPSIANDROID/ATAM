@@ -38,8 +38,19 @@ class ListPage extends StatefulWidget {
   _ListPageState createState() => _ListPageState();
 }
 
+/*class _ListPageState extends State<ListPage> {
+  FutureOr getPost() async {
+    var _db = FirebaseFirestore.instance;
+    QuerySnapshot reqA = await _db
+        .collection("request_absence")
+        .where("status", isEqualTo: 'waiting')
+        .get();
+    return reqA.docs;
+  }*/
+
 class _ListPageState extends State<ListPage> {
   FutureOr getPost() async {
+    final user =  FirebaseAuth.instance.currentUser.uid;
     var _db = FirebaseFirestore.instance;
     QuerySnapshot reqA = await _db
         .collection("request_absence")
@@ -51,6 +62,7 @@ class _ListPageState extends State<ListPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       child: FutureBuilder(
         future: getPost(),
@@ -64,14 +76,19 @@ class _ListPageState extends State<ListPage> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (_, index) {
                   return ListTile(
-                    title: Text(snapshot.data[index]['user_id']),
+                    title: Text(snapshot.data[index]['username']),
                     subtitle: Row(
                       children: <Widget>[
+
                         //Expanded(child: Text(formatTime(snapshot.data[index]['request_date'].toDate())),),
-                        Expanded(child: Text(snapshot.data[index]['request_date'].toString()),),
+                        Expanded(child: Text(DateTime.fromMicrosecondsSinceEpoch(snapshot.data[index]['request_date'].microsecondsSinceEpoch).toString(),)),
                         Expanded(child: Text(snapshot.data[index]['reason'].toString()),),
                         Expanded(child: RaisedButton(onPressed: () {},child: Text("Approve"),color: Colors.blue,textColor: Colors.white,)),
-                        Expanded(child: RaisedButton(onPressed: () {},child: Text("Reject"),color: Colors.red,textColor: Colors.white,)),
+                        Expanded(child: RaisedButton(onPressed: () {
+
+                        },
+                          child: Text("Reject"),
+                          color: Colors.red,textColor: Colors.white,)),
                       ]
                     ),
                   );

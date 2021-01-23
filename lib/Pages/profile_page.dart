@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/OfficeManagement/office_management.dart';
@@ -95,6 +96,16 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future getPost() async {
+    final user =  FirebaseAuth.instance.currentUser.uid;
+    var _db = FirebaseFirestore.instance;
+    QuerySnapshot reqA = await _db
+        .collection("users").doc(user).collection('request_absence')
+        .where("status", isEqualTo: 'waiting')
+        .get();
+    return reqA.docs;
   }
 }
 
