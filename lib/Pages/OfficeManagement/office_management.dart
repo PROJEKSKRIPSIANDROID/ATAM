@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/OfficeManagement/OfficeManagementServices.dart';
 import 'package:mattendance/Pages/OfficeManagement/add_edit_office.dart';
@@ -24,6 +25,8 @@ class _OfficeManagement extends State<OfficeManagement> {
   List filteredNames = new List();
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text("Office Management", style: TextStyle(color: Colors.black),);
+  String docId = "";
+  String officeName = "";
 
   @override
   Widget build(BuildContext context) {
@@ -51,60 +54,112 @@ class _OfficeManagement extends State<OfficeManagement> {
                   );
                 }).toList();
               },
-              onSelected: (choice) => handleClick(choice, context),
+              onSelected: (choice) => addOrEditOffice('Add', context),
             ),
           ),
         ],
       ),
       body: Container(
         height: 500,
-        child: listOffice.isEmpty
-            ? Column(
-          children: <Widget>[
-            Text(
-              'No Office Data!',
-              style: Theme.of(context).textTheme.title,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-                height: 200,
-                child: Image.asset(
-                  'assets/images/waiting.png',
-                  fit: BoxFit.cover,
-                )),
-          ],
-        )
-            : ListView.builder(
-          itemBuilder: (ctx, index) {
-            return Card(
-              elevation: 5,
-              margin: EdgeInsets.symmetric(
-                vertical: 8,
-                horizontal: 5,
-              ),
-              child: ListTile(
-                leading: Icon(
-                  Icons.business_rounded
-                ),
-                title: Text(
-                  listOffice[index].officeName,
-                  style: Theme.of(context).textTheme.title,
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  color: Theme.of(context).errorColor,
-                ),
-              ),
-            );
-          },
-          itemCount: listOffice.length,
+        child: StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('ref_office_location').snapshots(),
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+              if(!snapshot.hasData){
+                return Container(
+                    color: Colors.red,
+                    height: 200,
+                    width: 200,
+                    child: Text("No Data"));
+              }
+              return ListView(
+                children: snapshot.data.docs.map((document) {
+                  return Card(
+                    elevation: 5,
+                    margin: EdgeInsets.fromLTRB(5, 8, 5, 0),
+                    child: ListTile(
+                        leading: Icon(
+                            Icons.business_rounded
+                        ),
+                        title: Text(document['office_name'],
+                          style: Theme.of(context).textTheme.title,
+                        ),
+                        trailing: Wrap(
+                          spacing: -5,
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              color: Colors.black,
+                              onPressed: () {
+                                officeName = document['office_name'].toString();
+                                docId = document.id;
+                                addOrEditOffice('Edit', context);
+                              }
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              color: Theme.of(context).errorColor,
+                              onPressed: (){
+                                officeName = document['office_name'].toString();
+                                docId = document.id;
+                                deleteConfirmDialog(context);
+                              },
+                            ),
+                          ],
+                        )
+                    ),
+                  );
+                }).toList(),
+              );
+            }
         ),
       )
     );
   }
 
+  deleteConfirmDialog(BuildContext context) {
+
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed:  () {
+        docId = "";
+        officeName = "";
+        Navigator.of(context).pop();
+        },
+    );
+    Widget deleteButton = FlatButton(
+      child: Text("Delete"),
+      onPressed:  () {
+        deleteOffice(docId);
+        Navigator.of(context).pop();
+        },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Delete Confirmation"),
+      content: Text("Are you sure you want to delete $officeName?"),
+      actions: [
+        cancelButton,
+        deleteButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+
+  Future<void> deleteOffice(String docId) {
+    CollectionReference officeLoc = FirebaseFirestore.instance.collection('ref_office_location');
+    return officeLoc
+        .doc(docId)
+        .delete()
+        .then((value) => print("Office Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
+  }
 
   void _searchPressed() {
     setState(() {
@@ -126,14 +181,17 @@ class _OfficeManagement extends State<OfficeManagement> {
     });
   }
 
-  void handleClick(String value, BuildContext context) {
+  void addOrEditOffice(String mode, BuildContext context) {
     setState((){
       String title;
-      if (value == 'Add New Item') {
+      if (mode == 'Add') {
         title = 'Add New Office';
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AddEditOffice())
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditOffice(pageTitle: title,)));
+      }
+
+      if(mode == 'Edit') {
+        title = 'Edit Office';
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditOffice(pageTitle: title,docId: docId,)));
       }
     });
   }

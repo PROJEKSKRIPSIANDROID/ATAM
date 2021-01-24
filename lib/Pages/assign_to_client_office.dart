@@ -58,7 +58,6 @@ class _AssignToClientOffice extends State<AssignToClientOffice> {
                 child: CircularProgressIndicator(),
               );
             }
-
             return ListView(
               children: snapshot.data.docs.map((document){
                 return ListTile(
