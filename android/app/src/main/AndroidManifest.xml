@@ -10,7 +10,7 @@
         android:label="mattendance"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC9E-0a7NnvIUh9xuL7LDG6eO9BHijZmnI"/>
+            android:value="AIzaSyCb1Yponxr_tD5nwHsvTDKeAP-G4I7J7hc"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

@@ -18,12 +18,14 @@ class _AbsenceApproval extends State<AbsenceApproval> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Color.fromRGBO(255, 240, 245, 10),
         title: Row(
           children: <Widget>[
             Text(
               "Absence Approval",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.black),
             )
           ],
         ),

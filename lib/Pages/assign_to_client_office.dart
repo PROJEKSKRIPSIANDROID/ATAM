@@ -25,16 +25,29 @@ class _AssignToClientOffice extends State<AssignToClientOffice> {
   Widget build(BuildContext context) {
     int _id;
     return Scaffold(
-      appBar: new AppBar(
-        title: Row(
-          children: <Widget>[
-            Text(
-              "Assign to Client Office",
-              style: TextStyle(color: Colors.white),
-            )
-          ],
-        ),
+      appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.black),
+          backgroundColor: Color.fromRGBO(255, 240, 245, 10),
+          title: Row(
+            children: <Widget>[
+              Text(
+                "Assign to Client Office",
+                style: TextStyle(color: Colors.black),
+              )
+            ],
+          ),
       ),
+
+      //new AppBar(
+      //  title: Row(
+      //    children: <Widget>[
+      //      Text(
+      //        "Assign to Client Office",
+      //        style: TextStyle(color: Colors.white),
+      //      )
+      //    ],
+      //  ),
+      //),
       floatingActionButton: null,
       body: StreamBuilder(
           /*stream: FirebaseFirestore.instance.collection('users').where("position", isEqualTo: 'employee').snapshots(),*/
