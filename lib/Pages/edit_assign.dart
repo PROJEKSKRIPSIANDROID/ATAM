@@ -46,7 +46,7 @@ class _EditAssign extends State<EditAssign> {
         ),
       ),
       body: new StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('client_office').snapshots(),
+          stream: FirebaseFirestore.instance.collection('ref_office_location').snapshots(),
           builder: (context, snapshot){
             if(snapshot.hasData == null){
               return CircularProgressIndicator();
@@ -92,9 +92,8 @@ class _EditAssign extends State<EditAssign> {
                           });
                         },
                         items: snapshot.data.docs.map((DocumentSnapshot document) {
-                          newLat = document.data()['lat'];
                           return new DropdownMenuItem<String>(
-                              value: document.data()['name'],
+                              value: document.data()['office_name'],
                               child: new Container(
                                 decoration: new BoxDecoration(
                                   /*                           color: primaryColor,*/
@@ -103,7 +102,7 @@ class _EditAssign extends State<EditAssign> {
                                 height: 100.0,
                                 padding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 0.0),
                                 //color: primaryColor,
-                                child: new Text(document.data()['name'],/*style: textStyle*/),
+                                child: new Text(document.data()['office_name'],/*style: textStyle*/),
                               ),
                           );
                         }).toList(),
@@ -141,7 +140,6 @@ class _EditAssign extends State<EditAssign> {
 
                       _db2.collection("users").doc(currId).update({
                         'office': selectedOffice,
-                        'lat': lat,
                       });
 
                       Navigator.of(context).pop();
