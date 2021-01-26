@@ -36,9 +36,23 @@ class EmployeeProfile extends StatelessWidget {
                   ],
                 ),
                 Align(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 10, 0,0 ),
-                    child: Text('Radhitya Dimas Purwanta',style: TextStyle(fontSize: 25, color: Colors.white)),
+                  child: StreamBuilder(
+                      stream: FirebaseFirestore.instance.collection('users').where('user_id', isEqualTo: FirebaseAuth.instance.currentUser.uid).snapshots(),
+                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                        if(!snapshot.hasData){
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        return ListBody(
+                          children: snapshot.data.docs.map((document){
+                            return Center(
+                              //padding: EdgeInsets.fromLTRB(0, 10, 0,0 ),
+                              child: Text(document['username'],style: TextStyle(fontSize: 25)),
+                            );
+                          }).toList(),
+                        );
+                      }
                   ),
                 ),
               ],

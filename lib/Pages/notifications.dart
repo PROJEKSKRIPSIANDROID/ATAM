@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:mattendance/Pages/RequestAbsence/request_absence_page.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -78,20 +79,62 @@ class _ListPageState extends State<ListPage> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (_, index) {
                   return ListTile(
-                    title: Text(snapshot.data[index]['username']),
+                    title: FutureBuilder<dynamic>(
+                      future: getUserByUserId(snapshot.data[index]['user_id']),
+                      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                        if (snapshot.hasData) {
+                          if(snapshot.data.length > 1){
+                            return Text('Two or more users with the same Id exists');
+                          }
+                          else{
+                            return Text(snapshot.data[0]['username']);
+                          }
+                        } else {
+                          return Text('User not found');
+                        }
+                      },
+                    ),
                     subtitle: Row(
-                      children: <Widget>[
+                        children: <Widget>[
 
-                        //Expanded(child: Text(formatTime(snapshot.data[index]['request_date'].toDate())),),
-                        Expanded(child: Text(DateTime.fromMicrosecondsSinceEpoch(snapshot.data[index]['request_date'].microsecondsSinceEpoch).toString(),)),
-                        Expanded(child: Text(snapshot.data[index]['reason'].toString()),),
-                        Expanded(child: RaisedButton(onPressed: () {},child: Text("Approve"),color: Colors.blue,textColor: Colors.white,)),
-                        Expanded(child: RaisedButton(onPressed: () {
+                          //Expanded(child: Text(formatTime(snapshot.data[index]['request_date'].toDate())),),
+                          Expanded(child: Text(DateTime.fromMicrosecondsSinceEpoch(snapshot.data[index]['request_date'].microsecondsSinceEpoch).toString(),)),
+                          Expanded(child: Text(snapshot.data[index]['reason'].toString()),),
+                          Expanded(child: RaisedButton(onPressed: () {
 
-                        },
-                          child: Text("Reject"),
-                          color: Colors.red,textColor: Colors.white,)),
-                      ]
+                            String id = snapshot.data[index]['request_id'].toString();
+                            // var reqAbsenceId = FirebaseFirestore.instance
+                            //     .collection("request_absence")
+                            //     .where("request_id", isEqualTo: id)
+                            //     .get();
+
+
+                            FirebaseFirestore.instance.collection('request_absence').doc(snapshot.data[index].documentID).update({
+                              'status': 'approve'
+                            });
+
+
+                            FirebaseFirestore.instance.collection('attendance_history').doc().set({
+                              'attendance_date': snapshot.data[index]['request_date'],
+                              'status': snapshot.data[index]['reason'],
+                              'user_id': snapshot.data[index]['user_id']
+                            });
+
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => new AbsenceApproval()));
+
+                          },
+                            child: Text("Approve"),
+                            color: Colors.blue,textColor: Colors.white,)),
+                          Expanded(child: RaisedButton(onPressed: () {
+                            FirebaseFirestore.instance.collection('request_absence').doc(snapshot.data[index].documentID).update({
+                              'status': 'reject'
+                            });
+
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => new AbsenceApproval()));
+                          },
+                            child: Text("Reject"),
+                            color: Colors.red,textColor: Colors.white,)),
+                        ]
                     ),
                   );
                 });
@@ -99,17 +142,16 @@ class _ListPageState extends State<ListPage> {
         },
       ),
     );
-  }
-}
 
-class DetailPage extends StatefulWidget{
-  @override
-  _DetailPageState createState() => _DetailPageState();
-}
-
-class _DetailPageState extends State<DetailPage>{
-  @override
-  Widget build(BuildContext context){
-    return Container();
   }
+
+  Future<dynamic> getUserByUserId(String userId) async {
+    return (await FirebaseFirestore.instance
+        .collection("users")
+        .where("user_id", isEqualTo: userId)
+        .get()
+    ).docs;
+  }
+
+
 }

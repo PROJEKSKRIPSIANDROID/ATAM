@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mattendance/Pages/employee_main_menu.dart';
 import 'package:mattendance/Pages/home_page.dart';
 import 'package:mattendance/Pages/main_menu.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -103,7 +104,7 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BottomNavBar(),
+                      builder: (_) => EmployeeMainMenu(),
                     ));
               },
             )
@@ -141,15 +142,19 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
       return uname.docs;
     }
 
- /*   String name = user.uid.toString();
-    String uname = _db2.collection("users").where("user_id", isEqualTo: name).get().toString();*/
-
     String name = user.uid.toString();
-  _db2.collection('users').doc(uid).collection('request_absence').add({
+    String uname = _db2.collection("users").where("user_id", isEqualTo: name).snapshots().toString();
+
+
+//DocumentReference ref = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    DocumentReference ref = FirebaseFirestore.instance.collection('request_absence').doc(); //penambahan baru
+  _db2.collection('request_absence').doc().set({
    // 'username':_db2.collection("users").where("user_id", isEqualTo: name).get(),
     'request_date': reqDate,
     'status': 'waiting',
     'reason':reqReason,
+    'user_id': user.uid,
+    'request_id': ref.id,  //penambahan baru
   });
 
 /*    _db.collection('request_absence').doc().set(

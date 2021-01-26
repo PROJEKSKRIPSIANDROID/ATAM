@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mattendance/Pages/EmployeeAttendance/employee_attendance_hist.dart';
+import 'package:mattendance/Pages/MonitoringEmployee/monitoring_employee_location.dart';
 import 'package:mattendance/Pages/OfficeManagement/office_management.dart';
 import 'package:mattendance/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,10 +38,28 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
                 Align(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 10, 0,0 ),
-                    child: Text('Radhitya Dimas Purwanta',style: TextStyle(fontSize: 25)),
-                  ),
+                  // child: Padding(
+                  //   padding: EdgeInsets.fromLTRB(0, 10, 0,0 ),
+                  //   child: Text('Radhitya Dimas Purwanta',style: TextStyle(fontSize: 25)),
+                  // ),
+                    child: StreamBuilder(
+                        stream: FirebaseFirestore.instance.collection('users').where('user_id', isEqualTo: FirebaseAuth.instance.currentUser.uid).snapshots(),
+                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                          if(!snapshot.hasData){
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return ListBody(
+                            children: snapshot.data.docs.map((document){
+                              return Center(
+                                //padding: EdgeInsets.fromLTRB(0, 10, 0,0 ),
+                                child: Text(document['username'],style: TextStyle(fontSize: 25)),
+                              );
+                            }).toList(),
+                          );
+                        }
+                    )
                 ),
               ],
             ),
@@ -56,6 +76,38 @@ class ProfileScreen extends StatelessWidget {
                   child: Text('Client Office Management',style: TextStyle(color: Colors.white,fontSize: 20),),
                   onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context) => OfficeManagement()));//authenticationBloc.dispatch(LoggedOut());
+                  },
+                )
+            ),
+          ),
+
+          Container(
+            width: 360,
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(29),
+                child: FlatButton(
+                  color: Colors.blue[600],
+                  padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  child: Text('Monitoring Employee Location',style: TextStyle(color: Colors.white,fontSize: 20),),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MonitoringEmployeeLocation()));//authenticationBloc.dispatch(LoggedOut());
+                  },
+                )
+            ),
+          ),
+
+          Container(
+            width: 360,
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(29),
+                child: FlatButton(
+                  color: Colors.blue[600],
+                  padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  child: Text('Employee Attendance History',style: TextStyle(color: Colors.white,fontSize: 20),),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => EmployeeAttendanceHist()));//authenticationBloc.dispatch(LoggedOut());
                   },
                 )
             ),

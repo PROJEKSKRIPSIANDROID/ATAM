@@ -1,4 +1,5 @@
 import 'dart:async';
+//import 'dart:html';
 import 'package:mattendance/Pages/assign_to_client_office.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,6 +20,7 @@ class EditAssign extends StatefulWidget {
 
 class _EditAssign extends State<EditAssign> {
   var _chooseOffice;
+  var newLat;
   var _queryCat;
   CalendarController _controller;
 
@@ -26,6 +28,7 @@ class _EditAssign extends State<EditAssign> {
     super.initState();
     _controller = CalendarController();
   }
+
   @override
   Widget build(BuildContext context) {
     String currId = widget.post.data()['user_id'];
@@ -89,6 +92,7 @@ class _EditAssign extends State<EditAssign> {
                           });
                         },
                         items: snapshot.data.docs.map((DocumentSnapshot document) {
+                          newLat = document.data()['lat'];
                           return new DropdownMenuItem<String>(
                               value: document.data()['name'],
                               child: new Container(
@@ -100,7 +104,7 @@ class _EditAssign extends State<EditAssign> {
                                 padding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 0.0),
                                 //color: primaryColor,
                                 child: new Text(document.data()['name'],/*style: textStyle*/),
-                              )
+                              ),
                           );
                         }).toList(),
                       ),
@@ -113,9 +117,31 @@ class _EditAssign extends State<EditAssign> {
                       FirebaseFirestore _db2 = FirebaseFirestore.instance;
                       FirebaseAuth _auth = FirebaseAuth.instance;
                       final user = _auth.currentUser;
+
                       String selectedOffice = _chooseOffice.toString();
+                      String lat = newLat.toString();
+/*
+                      getData() {
+                        return  FirebaseFirestore.instance.collection('client_office').where('office_name', isEqualTo: selectedOffice ).snapshots();
+                      }
+
+                      var a = FirebaseFirestore.instance.collection('client_office').where('office_name', isEqualTo: selectedOffice ).snapshots();
+*/
+
+                      // getData().then((val){
+                      //   {
+                      //     print(val.docs[0].data()["lat"]);
+                      //     _db2.collection("users").doc(currId).update({
+                      //       'office': selectedOffice,
+                      //       'lat': val.docs[0].data()["lat"]
+                      //     });
+                      //   }
+                      // });
+
+
                       _db2.collection("users").doc(currId).update({
                         'office': selectedOffice,
+                        'lat': lat,
                       });
 
                       Navigator.of(context).pop();
