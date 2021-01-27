@@ -96,39 +96,44 @@ class _AttendanceHistory extends State<AttendanceHistory>{
               startingDayOfWeek: StartingDayOfWeek.monday,
               onDaySelected: (day, events, holidays) {
                 int days = _selectedDay.weekday;
-                if(days != 0){
-
-                }
-                if(_selectedEvents.length != 0){
-                  FirebaseFirestore.instance
-                      .collection('attendance_history')
-                      .doc(_selectedEvents.toString())
-                      .get()
-                      .then((DocumentSnapshot documentSnapshot) {
-                    var data = documentSnapshot.data();
-
-                    if(data['clock_in'].toString().isNotEmpty){
-                      clockIn = data['clock_in'].toString();
-                    }else{
-                      clockIn = '-';
-                    }
-
-                    if(data['clock_out'].toString().isNotEmpty){
-                      clockOut = data['clock_out'].toString();
-                    }else{
-                      clockOut = '-';
-                    }
-
-                    if(data['status'].toString().isNotEmpty){
-                      status = data['status'].toString();
-                    }else{
-                      status = 'Ok';
-                    }
-                  });
-                }
                 setState(() {
                   _selectedDay = day;
                   _selectedEvents = events;
+
+                  if(_selectedEvents.length != 0){
+                    FirebaseFirestore.instance
+                        .collection('attendance_history')
+                        .doc(_selectedEvents[0].toString())
+                        .get()
+                        .then((DocumentSnapshot documentSnapshot) {
+                      var data = documentSnapshot.data();
+
+                      if(data['clock_in'].toString().isNotEmpty){
+                        Timestamp clockInTimestamp = data['clock_in'];
+                        clockIn = DateFormat('HH:mm:ss').format(clockInTimestamp.toDate()).toString();
+                      }else{
+                        clockIn = '-';
+                      }
+
+                      if(data['clock_out'].toString().isNotEmpty){
+                        Timestamp clockInTimestamp = data['clock_out'];
+                        clockOut = DateFormat('HH:mm:ss').format(clockInTimestamp.toDate()).toString();
+                      }else{
+                        clockOut = '-';
+                      }
+
+                      if(data['status'].toString().isNotEmpty){
+                        status = data['status'].toString();
+                      }else{
+                        status = 'Ok';
+                      }
+                      AttendanceDetail();
+                    });
+                  }else{
+                    clockIn = '-';
+                    clockOut = '-';
+                    status = 'Mangkir';
+                  }
                 });
               },
               events: dateEvents,
@@ -153,7 +158,7 @@ class AttendanceDetail extends StatelessWidget {
     return Container(
       child: Column(
         children: [
-          AttendanceDetailBox(text: 'Office Location',value: clockIn,),
+          AttendanceDetailBox(text: 'Office Location',value: '-',),
           AttendanceDetailBox(text: 'Clock in',value: clockIn,),
           AttendanceDetailBox(text: 'Clock out',value: clockOut,),
           AttendanceDetailBox(text: 'Status',value: status,),
