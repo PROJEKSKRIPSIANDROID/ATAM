@@ -111,7 +111,7 @@ class AddEditOfficeState extends State<AddEditOffice> {
     }
 
     //Check if dooId, then state = Edit Data
-    if (widget.docId.isNotEmpty){
+    if (widget.docId != null){
       FirebaseFirestore _db = FirebaseFirestore.instance;
       _db.collection("ref_office_location").doc(widget.docId).update({
         'office_name': officeNameController.text,

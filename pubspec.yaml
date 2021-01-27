@@ -45,6 +45,7 @@ dependencies:
   flutter_google_places: ^0.2.6
   geocoder: ^0.2.1
   uuid: ^2.2.2
+  intl: ^0.16.1
 
 
 dev_dependencies:

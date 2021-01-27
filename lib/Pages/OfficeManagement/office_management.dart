@@ -1,24 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:mattendance/Pages/OfficeManagement/OfficeManagementServices.dart';
 import 'package:mattendance/Pages/OfficeManagement/add_edit_office.dart';
 
 class OfficeManagement extends StatefulWidget {
-  final List<Offices> listOffice = [
-    Offices(
-       id: 't1',
-       officeName: 'MPM Finance',
-       officeAddress: 'Jl. Raya',
-     ),
-  ];
   @override
-  _OfficeManagement createState() => _OfficeManagement(this.listOffice);
+  _OfficeManagement createState() => _OfficeManagement();
 }
 
 class _OfficeManagement extends State<OfficeManagement> {
-  final List<Offices> listOffice;
-  _OfficeManagement(this.listOffice);
-
   final TextEditingController _filter = new TextEditingController();
   String _searchText = "";
   List names = new List();
