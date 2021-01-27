@@ -23,6 +23,7 @@ class _HomePage extends State<HomePage>{
   @override
   void initState() {
     super.initState();
+    getUserLocation();
   }
 
   Completer<GoogleMapController> _controller = Completer();
@@ -36,15 +37,16 @@ class _HomePage extends State<HomePage>{
   }
 
   _onCameraMove(CameraPosition position){
-    _lastMapPosition = position.target;
-  }
+     _lastMapPosition = position.target;
+   }
 
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController newGoogleMapController;
   Position currentPosition;
 
+@override
 
-  void getUserLocation()async{
+  Future <void> getUserLocation() async{
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     currentPosition = position;
     LatLng latLongPosition = LatLng(position.latitude, position.longitude);
@@ -76,9 +78,9 @@ class _HomePage extends State<HomePage>{
             myLocationEnabled: true,
             zoomControlsEnabled: true,
             zoomGesturesEnabled: true,
-            mapType: _currentMapType,
-            markers: _markers,
-            onCameraMove: _onCameraMove,
+            mapType: MapType.normal,
+            //markers: _markers,
+            //onCameraMove: _onCameraMove,
             onMapCreated: (GoogleMapController controller){
               _controllerGoogleMap.complete(controller);
               newGoogleMapController = controller;

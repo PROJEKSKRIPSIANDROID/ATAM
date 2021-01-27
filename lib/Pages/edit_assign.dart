@@ -48,7 +48,7 @@ class _EditAssign extends State<EditAssign> {
       body: new StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('ref_office_location').snapshots(),
           builder: (context, snapshot){
-            if(snapshot.hasData == null){
+            if(snapshot.data == null){
               return CircularProgressIndicator();
             }
             var length = snapshot.data.docs.length;
@@ -60,7 +60,7 @@ class _EditAssign extends State<EditAssign> {
               child: new Row(
                 children: <Widget>[
                   new Expanded(
-                      flex: 2,
+                      //flex: 2,
                       child: new Container(
                        /* height: 200,*/
                         padding: EdgeInsets.fromLTRB(12.0,10.0,10.0,10.0),
@@ -68,13 +68,13 @@ class _EditAssign extends State<EditAssign> {
                       )
                   ),
                   new Expanded(
-                    flex: 4,
+                    //flex: 4,
                     child:new InputDecorator(
                       decoration: const InputDecoration(
                         //labelText: 'Activity',
                         hintText: 'Choose Office',
                         hintStyle: TextStyle(
-/*                          color: primaryColor,*/
+                         // color: Colors.black,
                           fontSize: 16.0,
                           fontFamily: "OpenSans",
                           fontWeight: FontWeight.normal,
