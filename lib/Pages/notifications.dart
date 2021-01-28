@@ -117,7 +117,9 @@ class _ListPageState extends State<ListPage> {
                             FirebaseFirestore.instance.collection('attendance_history').doc().set({
                               'attendance_date': snapshot.data[index]['request_date'],
                               'status': snapshot.data[index]['reason'],
-                              'user_id': snapshot.data[index]['user_id']
+                              'user_id': snapshot.data[index]['user_id'],
+                              'clock_in': ''.toString(),
+                              'clock_out': ''.toString(),
                             });
 
                             Navigator.push(context, MaterialPageRoute(builder: (context) => new AbsenceApproval()));

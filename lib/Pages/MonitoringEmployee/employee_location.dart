@@ -65,30 +65,30 @@ class _EmployeeLocation extends State<EmployeeLocation> {
         body: Stack(
           children: <Widget>[
             new GoogleMap(
-                //onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(target: _center, zoom: 11.0),
-                //myLocationEnabled: false,
-                zoomControlsEnabled: true,
-                zoomGesturesEnabled: true,
-                mapType: MapType.normal,
-                markers: Set.from(allMarkers),
-                onCameraMove: _onCameraMove,
-                onMapCreated: (GoogleMapController controller) {
-                  _controllerGoogleMap.complete(controller);
-                  //newGoogleMapController = controller;
-                  /*Marker(
+              //onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(target: _center, zoom: 11.0),
+              //myLocationEnabled: false,
+              zoomControlsEnabled: true,
+              zoomGesturesEnabled: true,
+              mapType: MapType.normal,
+              markers: Set.from(allMarkers),
+              onCameraMove: _onCameraMove,
+              onMapCreated: (GoogleMapController controller) {
+                _controllerGoogleMap.complete(controller);
+                //newGoogleMapController = controller;
+                /*Marker(
                     position: LatLng(userLat.latitude, userLong.longitude)
                   );*/
-                  setState(() {
-                    // add marker
-                    allMarkers.add(Marker(
-                        markerId: MarkerId('Google'),
-                        draggable: false,
-                        position: LatLng(userLat.latitude, userLong.longitude)));
-                  });
+                setState(() {
+                  // add marker
+                  allMarkers.add(Marker(
+                      markerId: MarkerId('Google'),
+                      draggable: false,
+                      position: LatLng(userLat.latitude, userLong.longitude)));
+                });
 
-                },
-                //markers: Set<Marker>.of(markers.values),
+              },
+              //markers: Set<Marker>.of(markers.values),
             ),
           ],
         ));

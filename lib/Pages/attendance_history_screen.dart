@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mattendance/model/attendanceModel.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AttendanceHistory extends StatefulWidget{
@@ -162,7 +161,6 @@ class AttendanceDetail extends StatelessWidget {
           AttendanceDetailBox(text: 'Clock in',value: clockIn,),
           AttendanceDetailBox(text: 'Clock out',value: clockOut,),
           AttendanceDetailBox(text: 'Status',value: status,),
-          AttendanceDetailBox(text: 'Reason',value: '-',),
         ],
       ),
     );

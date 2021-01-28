@@ -55,7 +55,7 @@ class _HomePage extends State<HomePage>{
 
     String uId = FirebaseAuth.instance.currentUser.uid.toString();
     FirebaseFirestore.instance.collection('users').doc(uId).update({
-      'user_location': GeoPoint(position.latitude, position.latitude),
+      'user_location': GeoPoint(position.latitude, position.longitude),
     });
   }
 
