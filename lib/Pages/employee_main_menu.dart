@@ -32,7 +32,7 @@ class _EmployeeMainMenu extends State<EmployeeMainMenu>{
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
         elevation: 10,
-        items: [Icons.home, Icons.remove_from_queue_sharp, Icons.date_range_rounded, Icons.menu_rounded]
+        items: [Icons.home, Icons.remove_from_queue_sharp, Icons.date_range_rounded, Icons.person]
             .asMap()
             .map((key, value) => MapEntry(
           key, BottomNavigationBarItem(
@@ -59,7 +59,7 @@ class _EmployeeMainMenu extends State<EmployeeMainMenu>{
                     Text("History",
                         style: TextStyle(fontSize: 10,color: currIndex == 2 ? Colors.white : Colors.grey))
                   else if (key == 3)
-                      Text("Menu",
+                      Text("Profile",
                           style: TextStyle(fontSize: 10,color: currIndex == 3 ? Colors.white : Colors.grey))
               ],
             ),

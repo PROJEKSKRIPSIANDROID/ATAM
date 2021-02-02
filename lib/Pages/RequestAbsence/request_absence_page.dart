@@ -29,12 +29,12 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.blue,
+          backgroundColor: Color.fromRGBO(255, 240, 245, 10),
           title: Row(
             children: <Widget>[
               Text(
                 "Request for Absence",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.black),
               )
             ],
           )),

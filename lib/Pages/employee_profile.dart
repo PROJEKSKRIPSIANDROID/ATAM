@@ -20,7 +20,7 @@ class EmployeeProfile extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(10, 0, 0, 10 ),
-                    child: Text('Menu',style: TextStyle(fontSize: 25, color: Colors.white)),
+                    child: Text('Profile',style: TextStyle(fontSize: 25, color: Colors.black)),
                   ),
                 ),
                 Row(
