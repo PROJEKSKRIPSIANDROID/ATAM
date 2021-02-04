@@ -22,8 +22,10 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
   }
 
   var selectedName;
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  List<String> _absenceReason = <String>['Cuti', 'Izin', 'Sakit'];
+  final _formKey = GlobalKey<FormState>();
+  bool _autovalidate = false;
+  String selectedReason;
+  String name;
 
   @override
   Widget build(BuildContext context) {
@@ -40,50 +42,64 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
           )),
       body: Form(
         key: _formKey,
-        autovalidate: true,
+        autovalidate: _autovalidate,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          //padding: EdgeInsets.symmetric(horizontal: 15.0),
           children: <Widget>[
             SizedBox(
               height: 20.0,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
+              children: <Widget> [
                 Icon(
-                  FontAwesomeIcons.calendarDay,
+                  FontAwesomeIcons.stream,
                   size: 25.0,
                   color: Colors.black,
                 ),
                 SizedBox(
                   width: 50.0,
                 ),
-                DropdownButton(
-                  items: _absenceReason
-                      .map((value) => DropdownMenuItem(
-                            child: Text(value,
-                                style: TextStyle(color: Colors.black)),
-                            value: value,
-                          ))
-                      .toList(),
-                  onChanged: (selectedReasonName) {
-                    setState(() {
-                      selectedName = selectedReasonName;
-                    });
-                  },
-                  value: selectedName,
-                  isExpanded: false,
-                  hint: Text('Choose your Reason Absence'),
-                  style: TextStyle(color: Colors.black),
+                Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: selectedReason,
+                      hint: Text(
+                        'Choose your reason',
+                      ),
+                      onChanged: (value) =>
+                          setState(() => selectedReason = value),
+                      validator: (value) => value == null ? 'field required' : null,
+                      items:
+                      ['Cuti', 'Izin', 'Sakit'].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
                 ),
               ],
             ),
-            TableCalendar(
-              initialCalendarFormat: CalendarFormat.week,
-              calendarController: _controller,
-              startingDayOfWeek: StartingDayOfWeek.monday,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget> [
+                Icon(
+                  FontAwesomeIcons.calendarAlt,
+                  size: 25.0,
+                  color: Colors.black,
+                ),
+                SizedBox(
+                  width: 50.0,
+                ),
+                Expanded(
+                  child: TableCalendar(
+                    initialCalendarFormat: CalendarFormat.month,
+                    calendarController: _controller,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                  ),
+                ),
+              ],
             ),
             Container(
               //padding: EdgeInsets.symmetric(horizontal: 15.0),
@@ -93,19 +109,28 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
                 padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
                 decoration: BoxDecoration(
                     border: Border(
-                  top: BorderSide(color: Theme.of(context).dividerColor),
-                )),
+                      top: BorderSide(color: Theme.of(context).dividerColor),
+                    )),
               ),
             ),
             RaisedButton(
-              child: Text('Sumbit'),
+              child: Text('Submit'),
+              color: Colors.blue,
               onPressed: () {
-                addToReqAbsence();
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EmployeeMainMenu(),
-                    ));
+                if (_formKey.currentState.validate()) {
+                  addToReqAbsence();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EmployeeMainMenu(),
+                      ));
+                  _formKey.currentState.save();//save once fields are valid, onSaved method invoked for every form fields
+
+                } else {
+                  setState(() {
+                    _autovalidate = true; //enable realtime validation
+                  });
+                }
               },
             )
           ],
@@ -114,13 +139,14 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
     );
   }
 
+
   void addToReqAbsence() {
 
     FirebaseFirestore _db = FirebaseFirestore.instance;
     FirebaseFirestore _db2 = FirebaseFirestore.instance;
     FirebaseAuth _auth = FirebaseAuth.instance;
     final user = _auth.currentUser;
-    String reqReason = selectedName.toString();
+    String reqReason = selectedReason.toString();
     DateTime reqDate = _controller.selectedDay;
 
 /*    Stream<QuerySnapshot> getUsername(BuildContext context) async*{

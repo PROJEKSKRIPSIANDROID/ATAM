@@ -1,21 +1,16 @@
-import 'dart:async';
-//import 'dart:html';
-import 'package:mattendance/Pages/assign_to_client_office.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:time_formatter/time_formatter.dart';
-import 'package:mattendance/Pages/main_menu.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditAssign extends StatefulWidget {
   @override
   final DocumentSnapshot post;
+
   EditAssign({this.post});
-  _EditAssign createState()=> _EditAssign();
-  // State<StatefulWidget> createState() => new _EditAssign();
+
+  _EditAssign createState() => _EditAssign();
+// State<StatefulWidget> createState() => new _EditAssign();
 }
 
 class _EditAssign extends State<EditAssign> {
@@ -23,6 +18,8 @@ class _EditAssign extends State<EditAssign> {
   var newLat;
   var _queryCat;
   CalendarController _controller;
+  final _formKey = GlobalKey<FormState>();
+  bool _autovalidate = false;
 
   void initState() {
     super.initState();
@@ -45,65 +42,68 @@ class _EditAssign extends State<EditAssign> {
           ],
         ),
       ),
-      body: new StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('ref_office_location').snapshots(),
-          builder: (context, snapshot){
-            if(snapshot.data == null){
-              return CircularProgressIndicator();
-            }
-            var length = snapshot.data.docs.length;
-            DocumentSnapshot ds = snapshot.data.docs[length - 1];
-            _queryCat = snapshot.data.docs;
-            return new Container(
-              padding: EdgeInsets.only(bottom: 16.0),
-              //         width: screenSize.width*0.9,
-              child: new Row(
+      body: Form(
+        key: _formKey,
+        autovalidate: _autovalidate,
+        child: new StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('ref_office_location')
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return CircularProgressIndicator();
+              }
+              var length = snapshot.data.docs.length;
+              DocumentSnapshot ds = snapshot.data.docs[length - 1];
+              _queryCat = snapshot.data.docs;
+              return Row(
                 children: <Widget>[
                   new Expanded(
-                      //flex: 2,
-                      child: new Container(
-                       /* height: 200,*/
-                        padding: EdgeInsets.fromLTRB(12.0,10.0,10.0,10.0),
-                        child: new Text("Client Office", style: TextStyle(fontSize: 16.0),/*,style: textStyleBlueBold,*/),
-                      )
+                    child: new Text(
+                      "Client Office",
+                      style: TextStyle(
+                          fontSize: 16.0), /*,style: textStyleBlueBold,*/
+                    ),
                   ),
                   new Expanded(
-                    //flex: 4,
-                    child:new InputDecorator(
+                    child: new InputDecorator(
                       decoration: const InputDecoration(
-                        //labelText: 'Activity',
                         hintText: 'Choose Office',
                         hintStyle: TextStyle(
-                         // color: Colors.black,
+                          // color: Colors.black,
                           fontSize: 16.0,
                           fontFamily: "OpenSans",
                           fontWeight: FontWeight.normal,
                         ),
                       ),
                       isEmpty: _chooseOffice == null,
-                      child: new DropdownButton(
+                      child: new DropdownButtonFormField(
                         //value: _chooseOffice,
                         isDense: true,
+                        validator: (value) =>
+                        value == null ? 'field required' : null,
                         onChanged: (String newValue) {
                           setState(() {
                             _chooseOffice = newValue.toString();
-                            //dropDown = false;
                             print(_chooseOffice);
                           });
                         },
                         items: snapshot.data.docs.map((DocumentSnapshot document) {
                           return new DropdownMenuItem<String>(
-                              value: document.data()['office_name'],
-                              child: new Container(
-                                decoration: new BoxDecoration(
-                                  /*                           color: primaryColor,*/
-                                    borderRadius: new BorderRadius.circular(5.0)
-                                ),
-                                height: 100.0,
-                                padding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 0.0),
-                                //color: primaryColor,
-                                child: new Text(document.data()['office_name'],/*style: textStyle*/),
+                            value: document.data()['office_name'],
+                            child: new Container(
+                              decoration: new BoxDecoration(
+                                /*                           color: primaryColor,*/
+                                  borderRadius: new BorderRadius.circular(5.0)),
+                              //height: 18.0,
+                              padding:
+                                    EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 0.0),
+                              //color: primaryColor,
+                              child: new Text(
+                                document
+                                    .data()['office_name'], /*style: textStyle*/
                               ),
+                            ),
                           );
                         }).toList(),
                       ),
@@ -112,62 +112,38 @@ class _EditAssign extends State<EditAssign> {
                   RaisedButton(
                     child: Text('Update'),
                     onPressed: () {
-                      FirebaseFirestore _db = FirebaseFirestore.instance;
-                      FirebaseFirestore _db2 = FirebaseFirestore.instance;
-                      FirebaseAuth _auth = FirebaseAuth.instance;
-                      final user = _auth.currentUser;
+                      if (_formKey.currentState.validate()) {
+                        update();
+                        Navigator.of(context).pop();
+                        _formKey.currentState
+                            .save(); //save once fields are valid, onSaved method invoked for every form fields
 
-                      String selectedOffice = _chooseOffice.toString();
-                      String lat = newLat.toString();
-/*
-                      getData() {
-                        return  FirebaseFirestore.instance.collection('client_office').where('office_name', isEqualTo: selectedOffice ).snapshots();
+                      } else {
+                        setState(() {
+                          _autovalidate = true; //enable realtime validation
+                        });
                       }
-
-                      var a = FirebaseFirestore.instance.collection('client_office').where('office_name', isEqualTo: selectedOffice ).snapshots();
-*/
-
-                      // getData().then((val){
-                      //   {
-                      //     print(val.docs[0].data()["lat"]);
-                      //     _db2.collection("users").doc(currId).update({
-                      //       'office': selectedOffice,
-                      //       'lat': val.docs[0].data()["lat"]
-                      //     });
-                      //   }
-                      // });
-
-
-                      _db2.collection("users").doc(currId).update({
-                        'office': selectedOffice,
-                      });
-
-                      Navigator.of(context).pop();
                     },
                   )
-
-                  /*TableCalendar(
-                    initialCalendarFormat: CalendarFormat.week,
-                    calendarController: _controller,
-                    startingDayOfWeek: StartingDayOfWeek.monday,
-                  ),
-                  Container(
-                    //padding: EdgeInsets.symmetric(horizontal: 15.0),
-                    padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                      decoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(color: Theme.of(context).dividerColor),
-                          )),
-                    ),
-                  ),*/
                 ],
-              ),
-            );
-          }
+              );
+            }),
       ),
     );
+  }
+
+  void update() {
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+    FirebaseFirestore _db2 = FirebaseFirestore.instance;
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    final user = _auth.currentUser;
+    String currId = widget.post.data()['user_id'];
+
+    String selectedOffice = _chooseOffice.toString();
+    String lat = newLat.toString();
+
+    _db2.collection("users").doc(currId).update({
+      'office': selectedOffice,
+    });
   }
 }

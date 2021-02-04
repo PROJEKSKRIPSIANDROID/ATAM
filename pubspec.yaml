@@ -49,7 +49,7 @@ dependencies:
 
   location: ^3.0.0
   geoflutterfire: ^2.2.1
-
+  flutter_easyloading: ^2.2.2
 
 
 
