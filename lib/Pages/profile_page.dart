@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/EmployeeAttendance/employee_attendance_hist.dart';
 import 'package:mattendance/Pages/MonitoringEmployee/monitoring_employee_location.dart';
 import 'package:mattendance/Pages/OfficeManagement/office_management.dart';
+import 'package:mattendance/Pages/deptHead_attendance_history.dart';
+import 'package:mattendance/Pages/main_menu.dart';
 import 'package:mattendance/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -67,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
 
           Container(
             width: 360,
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(29),
                 child: FlatButton(
@@ -83,7 +85,23 @@ class ProfileScreen extends StatelessWidget {
 
           Container(
             width: 360,
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(29),
+                child: FlatButton(
+                  color: Colors.blue[600],
+                  padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  child: Text('My Attendance History',style: TextStyle(color: Colors.white,fontSize: 20),),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => DeptHeadAttendanceHistory()));//authenticationBloc.dispatch(LoggedOut());
+                  },
+                )
+            ),
+          ),
+
+          Container(
+            width: 360,
+            padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(29),
                 child: FlatButton(
@@ -99,7 +117,7 @@ class ProfileScreen extends StatelessWidget {
 
           Container(
             width: 360,
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(29),
                 child: FlatButton(
@@ -115,7 +133,7 @@ class ProfileScreen extends StatelessWidget {
 
           Container(
             width: 360,
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(29),
               child: FlatButton(
@@ -135,8 +153,9 @@ class ProfileScreen extends StatelessWidget {
                           CupertinoDialogAction(
                             child: Text("Yes"),
                           onPressed: () {
-                            FirebaseAuth.instance.signOut().then(
-                                    (_) => Navigator.of(context).pushReplacementNamed('/login'));
+/*                                  FirebaseAuth.instance.signOut().then(
+                                          (_) => Navigator.of(context).pushReplacementNamed('/login'));*/
+                            _signOut();
                           })
                         ],
                     )
@@ -148,6 +167,12 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future <BottomNavBar> _signOut()  async{
+    await FirebaseAuth.instance.signOut();
+
+    return new BottomNavBar();
   }
 
   Future getPost() async {

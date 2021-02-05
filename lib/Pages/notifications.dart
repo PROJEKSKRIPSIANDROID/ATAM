@@ -9,6 +9,8 @@ import 'package:mattendance/Pages/main_menu.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_formatter/time_formatter.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:intl/intl.dart';
 
 class AbsenceApproval extends StatefulWidget {
   @override
@@ -96,9 +98,8 @@ class _ListPageState extends State<ListPage> {
                     ),
                     subtitle: Row(
                         children: <Widget>[
-
-                          //Expanded(child: Text(formatTime(snapshot.data[index]['request_date'].toDate())),),
-                          Expanded(child: Text(DateTime.fromMicrosecondsSinceEpoch(snapshot.data[index]['request_date'].microsecondsSinceEpoch).toString(),)),
+                          Expanded(child: Text((DateFormat('yyyy-MM-dd').format(snapshot.data[index]['request_date'].toDate())).toString())),
+                          //Expanded(child: Text(DateTime.fromMicrosecondsSinceEpoch(snapshot.data[index]['request_date'].microsecondsSinceEpoch).toString(),)),
                           Expanded(child: Text(snapshot.data[index]['reason'].toString()),),
                           Expanded(child: RaisedButton(onPressed: () {
 
@@ -132,7 +133,7 @@ class _ListPageState extends State<ListPage> {
                               'status': 'reject'
                             });
 
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => new AbsenceApproval()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceApproval()));
                           },
                             child: Text("Reject"),
                             color: Colors.red,textColor: Colors.white,)),
