@@ -75,9 +75,9 @@ class ProfileScreen extends StatelessWidget {
                 child: FlatButton(
                   color: Colors.blue[600],
                   padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-                  child: Text('Client Office Management',style: TextStyle(color: Colors.white,fontSize: 20),),
+                  child: Text('My Attendance History',style: TextStyle(color: Colors.white,fontSize: 20),),
                   onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => OfficeManagement()));//authenticationBloc.dispatch(LoggedOut());
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => DeptHeadAttendanceHistory()));//authenticationBloc.dispatch(LoggedOut());
                   },
                 )
             ),
@@ -91,9 +91,9 @@ class ProfileScreen extends StatelessWidget {
                 child: FlatButton(
                   color: Colors.blue[600],
                   padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-                  child: Text('My Attendance History',style: TextStyle(color: Colors.white,fontSize: 20),),
+                  child: Text('Client Office Management',style: TextStyle(color: Colors.white,fontSize: 20),),
                   onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => DeptHeadAttendanceHistory()));//authenticationBloc.dispatch(LoggedOut());
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => OfficeManagement()));//authenticationBloc.dispatch(LoggedOut());
                   },
                 )
             ),
@@ -153,9 +153,12 @@ class ProfileScreen extends StatelessWidget {
                           CupertinoDialogAction(
                             child: Text("Yes"),
                           onPressed: () {
+                            _signOut();
+                            //Navigator.of(context).pop();
+                            Navigator.of(context).pushReplacementNamed('/login');
 /*                                  FirebaseAuth.instance.signOut().then(
                                           (_) => Navigator.of(context).pushReplacementNamed('/login'));*/
-                            _signOut();
+
                           })
                         ],
                     )
@@ -169,10 +172,9 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future <BottomNavBar> _signOut()  async{
+  Future <void> _signOut()  async{
     await FirebaseAuth.instance.signOut();
-
-    return new BottomNavBar();
+    //return BottomNavBar();
   }
 
   Future getPost() async {

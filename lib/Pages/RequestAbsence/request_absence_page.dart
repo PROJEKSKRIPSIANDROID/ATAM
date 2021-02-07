@@ -7,6 +7,9 @@ import 'package:mattendance/Pages/home_page.dart';
 import 'package:mattendance/Pages/main_menu.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:cool_alert/cool_alert.dart';
+import 'package:intl/intl.dart';
 
 class RequestAbsencePage extends StatefulWidget {
   @override
@@ -119,12 +122,28 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   addToReqAbsence();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => EmployeeMainMenu(),
-                      ));
+                  /*showDialog(context: context,
+                      builder: (BuildContext context) => CupertinoAlertDialog(
+                        title: Text('sukses')
+                      )
+                  );*/
+                  CoolAlert.show(
+                    context: context,
+                    type: CoolAlertType.success,
+                    text: "Your request was successful!",
+                  );
+
                   _formKey.currentState.save();//save once fields are valid, onSaved method invoked for every form fields
+                  CoolAlert.show(
+                    context: context,
+                    type: CoolAlertType.success,
+                    text: "Your request was successful!",
+                      onConfirmBtnTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EmployeeMainMenu(),
+                          ))
+                  );
 
                 } else {
                   setState(() {

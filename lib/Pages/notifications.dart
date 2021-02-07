@@ -11,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_formatter/time_formatter.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:cool_alert/cool_alert.dart';
 
 class AbsenceApproval extends StatefulWidget {
   @override
@@ -102,38 +103,52 @@ class _ListPageState extends State<ListPage> {
                           //Expanded(child: Text(DateTime.fromMicrosecondsSinceEpoch(snapshot.data[index]['request_date'].microsecondsSinceEpoch).toString(),)),
                           Expanded(child: Text(snapshot.data[index]['reason'].toString()),),
                           Expanded(child: RaisedButton(onPressed: () {
+                            setState(() {
+                              String id = snapshot.data[index]['request_id'].toString();
+                              // var reqAbsenceId = FirebaseFirestore.instance
+                              //     .collection("request_absence")
+                              //     .where("request_id", isEqualTo: id)
+                              //     .get();
 
-                            String id = snapshot.data[index]['request_id'].toString();
-                            // var reqAbsenceId = FirebaseFirestore.instance
-                            //     .collection("request_absence")
-                            //     .where("request_id", isEqualTo: id)
-                            //     .get();
+
+                              FirebaseFirestore.instance.collection('request_absence').doc(snapshot.data[index].documentID).update({
+                                'status': 'approve'
+                              });
 
 
-                            FirebaseFirestore.instance.collection('request_absence').doc(snapshot.data[index].documentID).update({
-                              'status': 'approve'
+                              FirebaseFirestore.instance.collection('attendance_history').doc().set({
+                                'attendance_date': snapshot.data[index]['request_date'],
+                                'status': snapshot.data[index]['reason'],
+                                'user_id': snapshot.data[index]['user_id'],
+                                'clock_in': ''.toString(),
+                                'clock_out': ''.toString(),
+                              });
+
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => new AbsenceApproval()));
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.success,
+                                text: "Your Approve was successful!",
+                              );
                             });
-
-
-                            FirebaseFirestore.instance.collection('attendance_history').doc().set({
-                              'attendance_date': snapshot.data[index]['request_date'],
-                              'status': snapshot.data[index]['reason'],
-                              'user_id': snapshot.data[index]['user_id'],
-                              'clock_in': ''.toString(),
-                              'clock_out': ''.toString(),
-                            });
-
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => new AbsenceApproval()));
-
                           },
                             child: Text("Approve"),
                             color: Colors.blue,textColor: Colors.white,)),
                           Expanded(child: RaisedButton(onPressed: () {
-                            FirebaseFirestore.instance.collection('request_absence').doc(snapshot.data[index].documentID).update({
-                              'status': 'reject'
+                            setState(() {
+                              FirebaseFirestore.instance.collection('request_absence').doc(snapshot.data[index].documentID).update({
+                                'status': 'reject'
+                              });
+
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceApproval()));
+
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.success,
+                                text: "Your Reject was successful!",
+                              );
                             });
 
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceApproval()));
                           },
                             child: Text("Reject"),
                             color: Colors.red,textColor: Colors.white,)),

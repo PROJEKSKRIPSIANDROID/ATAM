@@ -65,7 +65,7 @@ class _LoginScreen extends State<LoginScreen> {
           'email': email,
           'position':'employee',
           'user_id': authResult.user.uid,
-          'office': 'Adicipta Inovasi Teknologi',
+          'office': 'AdIns',
         });
       }
     } on PlatformException catch (err) {
