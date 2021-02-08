@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' show cos, sqrt, asin;
 
@@ -18,6 +19,8 @@ class HomePage extends StatefulWidget{
 }
 
 class _HomePage extends State<HomePage>{
+
+  //region Properties
   List<Marker> markers = [];
   StreamSubscription streamSubscription;
   Location _locationTracker = Location();
@@ -31,6 +34,9 @@ class _HomePage extends State<HomePage>{
   //variable to check todayData
   DocumentSnapshot todayData;
   final user = FirebaseAuth.instance.currentUser.uid;
+  DateTime _myTime;
+  Timer periodicTime;
+  //endregion
 
   //Initiate Assigned Office Marker
   Future<void> initiateLocation() async {
@@ -127,21 +133,30 @@ class _HomePage extends State<HomePage>{
           totalDistance = calculateDistance(officeLat, officeLong, newLocalData.latitude, newLocalData.longitude);
 
           var timeNow = DateTime.now();
-          var clockOutRangeStart = new DateTime(timeNow.year, timeNow.month, timeNow.day, 15, 0, 0, 0, 0);
-          var clockOutRangeEnd =new DateTime(timeNow.year, timeNow.month, timeNow.day+1, 6, 0, 0, 0, 0);
+          var clockInRangeStart = new DateTime(timeNow.year, timeNow.month, timeNow.day, 6, 0, 0, 0, 0);
+          var clockInRangeEnd = new DateTime(timeNow.year, timeNow.month, timeNow.day, 12, 0, 0, 0, 0);
+          var clockOutRange1Start = new DateTime(timeNow.year, timeNow.month, timeNow.day, 15, 0, 0, 0, 0);
+          var clockOutRange1End =new DateTime(timeNow.year, timeNow.month, timeNow.day, 24, 0, 0, 0, 0);
+          var clockOutRange2Start = new DateTime(timeNow.year, timeNow.month, timeNow.day, 0, 0, 0, 0, 0);
+          var clockOutRange2End =new DateTime(timeNow.year, timeNow.month, timeNow.day, 6, 0, 0, 0, 0);
           //Validate user distance from office
-          if(totalDistance < 0.15 && todayData == null){
+          //Clock-in
+          if(totalDistance < 0.15 && todayData == null && (timeNow.compareTo(clockInRangeStart) > 0 && timeNow.compareTo(clockInRangeEnd) < 0)){
 
-            CollectionReference officeLoc = FirebaseFirestore.instance.collection(
+            CollectionReference attendanceHist = FirebaseFirestore.instance.collection(
                 'attendance_history');
-            officeLoc.add({
+            attendanceHist.add({
               'attendance_date': new DateTime(timeNow.year, timeNow.month, timeNow.day, 0, 0, 0, 0, 0), // 0 = format to date only
               'clock_in': DateTime.parse(timeNow.toString()),
               'clock_out': '',
-              'status': '',
+              'status': 'Work',
               'user_id': user
             }).then((value) => getTodayData());
-          }else if (totalDistance > 0.15 && todayData != null && (timeNow.compareTo(clockOutRangeStart) > 0 && timeNow.compareTo(clockOutRangeEnd) < 0)){
+
+            //Clock-out
+          }else if (totalDistance > 0.15 && todayData != null &&
+              ((timeNow.compareTo(clockOutRange1Start) > 0 && timeNow.compareTo(clockOutRange1End) < 0) ||
+                  (timeNow.compareTo(clockOutRange2Start) > 0 && timeNow.compareTo(clockOutRange2End) < 0))){
             FirebaseFirestore _db = FirebaseFirestore.instance;
             _db.collection("ref_office_location").doc(todayData.id).update({
               'clock_out': DateTime.parse(timeNow.toString()),
@@ -159,6 +174,7 @@ class _HomePage extends State<HomePage>{
 
   Future<void> getTodayData() async {
     var _db = FirebaseFirestore.instance;
+
     QuerySnapshot reqA = await _db
         .collection("attendance_history")
         .where('attendance_date', isGreaterThanOrEqualTo: DateTime(todayDate.year, todayDate.month, todayDate.day))
@@ -170,21 +186,31 @@ class _HomePage extends State<HomePage>{
         setState(() {
           Timestamp clockInTimestamp = todayData['clock_in'];
           clockIn = DateFormat('HH:mm').format(clockInTimestamp.toDate()).toString();
+
+          //Jika sudah clock-out
+          if(todayData['clock_out'] != null){
+            Timestamp clockOutTimestamp = todayData['clock_out'];
+            clockOut = DateFormat('HH:mm').format(clockOutTimestamp.toDate()).toString();
+          }
+
         });
       }
     }
   }
 
-  @override
-  void initState() {
-    formattedDate = _formatDateTime(todayDate);
-    Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
+  Future<void> initiateData() async {
+    periodicTime = Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
     if(todayDate.weekday == 6 || todayDate.weekday == 7){
       clockIn = 'OFF';
       clockOut = 'OFF';
     }else{
       initiateLocation();
     }
+  }
+
+  @override
+  void initState() {
+    initiateData();
     //getUserLocation();
     super.initState();
   }
@@ -194,6 +220,7 @@ class _HomePage extends State<HomePage>{
     if(streamSubscription != null){
       streamSubscription.cancel();
     }
+    periodicTime.cancel();
     super.dispose();
   }
 
@@ -228,10 +255,11 @@ class _HomePage extends State<HomePage>{
   }
 
 
-  void _getTime() {
-    final String formattedDateTime = _formatDateTime(DateTime.now());
+  Future<void> _getTime() async  {
+    _myTime = await NTP.now();
+    formattedDate = _formatDateTime(_myTime);
     setState(() {
-      formattedDate = formattedDateTime;
+      formattedDate = formattedDate;
     });
   }
 
@@ -300,7 +328,16 @@ class _HomePage extends State<HomePage>{
                           child: new Column(
                             children: <Widget>[
                               Text("Date"),
-                              Text(formattedDate)
+                              FutureBuilder(
+                                future: initiateData(),
+                                builder: (context, snapshot) {
+                                  if(formattedDate != null){
+                                    return Text(formattedDate);
+                                  }else{
+                                    return Text('Loading . .');
+                                  }
+                                },
+                              ),
                             ],
                           ),
                         ),

@@ -49,7 +49,7 @@ class _AttendanceHistory extends State<AttendanceHistory>{
     );  }
 
 
-  void fetchEvents() async{
+  void fetchEvents(){
     dateEvents = {};
     FirebaseAuth _auth = FirebaseAuth.instance;
     final user = _auth.currentUser;
@@ -70,10 +70,25 @@ class _AttendanceHistory extends State<AttendanceHistory>{
             }
           });
     });
-    setState(() {});
+  }
+
+  Future<DocumentSnapshot> getAttendanceDetail() async {
+    DocumentSnapshot doc;
+    if(_selectedEvents.length > 0){
+      return (await FirebaseFirestore.instance
+          .collection('attendance_history')
+          .doc(_selectedEvents[0].toString())
+          .get());
+    }else{
+      clockIn = '-';
+      clockOut = '-';
+      status = 'Mangkir';
+      return doc;
+    }
   }
 
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Color.fromRGBO(255, 240, 245, 10),
@@ -98,14 +113,16 @@ class _AttendanceHistory extends State<AttendanceHistory>{
                 setState(() {
                   _selectedDay = day;
                   _selectedEvents = events;
-
-                  if(_selectedEvents.length != 0){
-                    FirebaseFirestore.instance
-                        .collection('attendance_history')
-                        .doc(_selectedEvents[0].toString())
-                        .get()
-                        .then((DocumentSnapshot documentSnapshot) {
-                      var data = documentSnapshot.data();
+                });
+              },
+              events: dateEvents,
+            ),
+            FutureBuilder(
+                future: getAttendanceDetail(),
+                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+                  if (snapshot.hasData) {
+                    if(_selectedEvents.length != 0){
+                      var data = snapshot.data;
 
                       if(data['clock_in'].toString().isNotEmpty){
                         Timestamp clockInTimestamp = data['clock_in'];
@@ -126,18 +143,22 @@ class _AttendanceHistory extends State<AttendanceHistory>{
                       }else{
                         status = 'Ok';
                       }
-                      AttendanceDetail();
-                    });
-                  }else{
-                    clockIn = '-';
-                    clockOut = '-';
-                    status = 'Mangkir';
+                      return AttendanceDetail(clockIn: clockIn,clockOut: clockOut,status: status,);
+                    }else{
+                      return AttendanceDetail(clockIn: clockIn,clockOut: clockOut,status: status,);
+                    }
                   }
-                });
-              },
-              events: dateEvents,
-            ),
-            AttendanceDetail(clockIn: clockIn,clockOut: clockOut,status: status,),
+                  else{
+                    if(_selectedEvents.length == 0){
+                      return AttendanceDetail(clockIn: clockIn,clockOut: clockOut,status: status,);
+                    }
+                    else{
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  }
+                }),
             //Column(children:_eventWidgets)
         ],
         ),
@@ -157,7 +178,6 @@ class AttendanceDetail extends StatelessWidget {
     return Container(
       child: Column(
         children: [
-          AttendanceDetailBox(text: 'Office Location',value: '-',),
           AttendanceDetailBox(text: 'Clock in',value: clockIn,),
           AttendanceDetailBox(text: 'Clock out',value: clockOut,),
           AttendanceDetailBox(text: 'Status',value: status,),
@@ -177,7 +197,7 @@ class AttendanceDetailBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      margin: EdgeInsets.fromLTRB(5, 3, 5, 0),
+      margin: EdgeInsets.fromLTRB(5, 4, 5, 0),
       child: ListTile(
         leading: Container(
           width: 70,

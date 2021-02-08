@@ -50,6 +50,8 @@ dependencies:
   geoflutterfire: ^2.2.1
   flutter_easyloading: ^2.2.2
   cool_alert: ^1.0.3
+  ntp: ^1.0.7
+
 
 
 dev_dependencies:
