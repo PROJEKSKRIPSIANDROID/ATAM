@@ -36,7 +36,58 @@ class _HomePage extends State<HomePage>{
   final user = FirebaseAuth.instance.currentUser.uid;
   DateTime _myTime;
   Timer periodicTime;
+  Completer<GoogleMapController> _controller = Completer();
+  static const LatLng _center = const LatLng(-6.283890, 106.918980);
+  Completer<GoogleMapController> _controllerGoogleMap = Completer();
+  GoogleMapController newGoogleMapController;
   //endregion
+
+  //region State
+  @override
+  void initState() {
+    initiateData();
+    getTodayData();
+    realtimeDate();
+
+    super.initState();
+  }
+
+  @override
+  void dispose(){
+    if(streamSubscription != null){
+      streamSubscription.cancel();
+    }
+    periodicTime.cancel();
+    super.dispose();
+  }
+  //endregion
+
+  //region DateTime function
+
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat('dd-MM-yyyy kk:mm').format(dateTime);
+  }
+
+  void realtimeDate() {
+    periodicTime = Timer.periodic(Duration(seconds: 1), (Timer t) async {
+      _myTime = await NTP.now();
+      formattedDate = _formatDateTime(_myTime);
+      setState(() {
+        formattedDate = formattedDate;
+      });
+    });
+  }
+  //endregion
+
+  //region Location function
+  void initiateData() {
+    if(todayDate.weekday == 6 || todayDate.weekday == 7){
+      clockIn = 'OFF';
+      clockOut = 'OFF';
+    }else{
+      initiateLocation();
+    }
+  }
 
   //Initiate Assigned Office Marker
   Future<void> initiateLocation() async {
@@ -74,7 +125,6 @@ class _HomePage extends State<HomePage>{
           });
         });
       }
-      getTodayData();
     });
 
     //Get device location
@@ -84,27 +134,41 @@ class _HomePage extends State<HomePage>{
     newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
-  //void updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData) {
-  //  LatLng latlng = LatLng(newLocalData.latitude, newLocalData.longitude);
-  //  this.setState(() {
-  //    marker = Marker(
-  //        markerId: MarkerId("home"),
-  //        position: latlng,
-  //        rotation: newLocalData.heading,
-  //        draggable: false,
-  //        zIndex: 2,
-  //        flat: true,
-  //        anchor: Offset(0.5, 0.5),
-  //        icon: BitmapDescriptor.fromBytes(imageData));
-  //    circle = Circle(
-  //        circleId: CircleId("car"),
-  //        radius: newLocalData.accuracy,
-  //        zIndex: 1,
-  //        strokeColor: Colors.blue,
-  //        center: latlng,
-  //        fillColor: Colors.blue.withAlpha(70));
-  //  });
-  //}
+  Future<void> getTodayData() async {
+    var _db = FirebaseFirestore.instance;
+
+    QuerySnapshot reqA = await _db
+        .collection("attendance_history")
+        .where('attendance_date', isGreaterThanOrEqualTo: DateTime(todayDate.year, todayDate.month, todayDate.day))
+        .get();
+    List<QueryDocumentSnapshot> listData = reqA.docs.toList();
+    if(listData.isNotEmpty){
+      todayData = listData.where((element) => element['user_id'].toString() == user).first;
+      if(todayData != null){
+        setState(() {
+          Timestamp clockInTimestamp = todayData['clock_in'];
+          clockIn = DateFormat('HH:mm').format(clockInTimestamp.toDate()).toString();
+
+          //Jika sudah clock-out
+          if(todayData['clock_out'] != null){
+            Timestamp clockOutTimestamp = todayData['clock_out'];
+            clockOut = DateFormat('HH:mm').format(clockOutTimestamp.toDate()).toString();
+          }
+
+        });
+      }
+    }
+  }
+
+  //Calculate between user and office location
+  double calculateDistance(lat1, lon1, lat2, lon2){
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 +
+        c(lat1 * p) * c(lat2 * p) *
+            (1 - c((lon2 - lon1) * p))/2;
+    return 12742 * asin(sqrt(a));
+  }
 
   //function to get current location of user
   void getCurrentLocation() async {
@@ -172,101 +236,11 @@ class _HomePage extends State<HomePage>{
     }
   }
 
-  Future<void> getTodayData() async {
-    var _db = FirebaseFirestore.instance;
 
-    QuerySnapshot reqA = await _db
-        .collection("attendance_history")
-        .where('attendance_date', isGreaterThanOrEqualTo: DateTime(todayDate.year, todayDate.month, todayDate.day))
-        .get();
-    List<QueryDocumentSnapshot> listData = reqA.docs.toList();
-    if(listData.isNotEmpty){
-      todayData = listData.where((element) => element['user_id'].toString() == user).first;
-      if(todayData != null){
-        setState(() {
-          Timestamp clockInTimestamp = todayData['clock_in'];
-          clockIn = DateFormat('HH:mm').format(clockInTimestamp.toDate()).toString();
-
-          //Jika sudah clock-out
-          if(todayData['clock_out'] != null){
-            Timestamp clockOutTimestamp = todayData['clock_out'];
-            clockOut = DateFormat('HH:mm').format(clockOutTimestamp.toDate()).toString();
-          }
-
-        });
-      }
-    }
-  }
-
-  Future<void> initiateData() async {
-    periodicTime = Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
-    if(todayDate.weekday == 6 || todayDate.weekday == 7){
-      clockIn = 'OFF';
-      clockOut = 'OFF';
-    }else{
-      initiateLocation();
-    }
-  }
-
-  @override
-  void initState() {
-    initiateData();
-    //getUserLocation();
-    super.initState();
-  }
-  
-  @override
-  void dispose(){
-    if(streamSubscription != null){
-      streamSubscription.cancel();
-    }
-    periodicTime.cancel();
-    super.dispose();
-  }
-
-  Completer<GoogleMapController> _controller = Completer();
-  static const LatLng _center = const LatLng(-6.283890, 106.918980);
-
-  Completer<GoogleMapController> _controllerGoogleMap = Completer();
-  GoogleMapController newGoogleMapController;
-  //Position currentPosition;
-
-  //Future <void> getUserLocation() async{
-  //  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  //  currentPosition = position;
-  //  LatLng latLongPosition = LatLng(position.latitude, position.longitude);
-  //  CameraPosition cameraPosition = new CameraPosition(target: latLongPosition, zoom: 14);
-  //  newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-//
-  //  //String uId = FirebaseAuth.instance.currentUser.uid.toString();
-  //  //FirebaseFirestore.instance.collection('users').doc(uId).update({
-  //  //  'user_location': GeoPoint(position.latitude, position.longitude),
-  //  //});
-  //}
-
-  //Calculate between user and office location
-  double calculateDistance(lat1, lon1, lat2, lon2){
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 - c((lat2 - lat1) * p)/2 +
-        c(lat1 * p) * c(lat2 * p) *
-            (1 - c((lon2 - lon1) * p))/2;
-    return 12742 * asin(sqrt(a));
-  }
+  //endregion
 
 
-  Future<void> _getTime() async  {
-    _myTime = await NTP.now();
-    formattedDate = _formatDateTime(_myTime);
-    setState(() {
-      formattedDate = formattedDate;
-    });
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    return DateFormat('dd-MM-yyyy kk:mm').format(dateTime);
-  }
-
+  //region Widget
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -328,16 +302,8 @@ class _HomePage extends State<HomePage>{
                           child: new Column(
                             children: <Widget>[
                               Text("Date"),
-                              FutureBuilder(
-                                future: initiateData(),
-                                builder: (context, snapshot) {
-                                  if(formattedDate != null){
-                                    return Text(formattedDate);
-                                  }else{
-                                    return Text('Loading . .');
-                                  }
-                                },
-                              ),
+                              if(formattedDate != null)
+                                Text(formattedDate)
                             ],
                           ),
                         ),
@@ -434,4 +400,5 @@ class _HomePage extends State<HomePage>{
       ),
     );
   }
+  //endregion
 }
