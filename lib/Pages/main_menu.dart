@@ -5,7 +5,7 @@ import 'package:mattendance/Pages/home_page.dart';
 import 'package:mattendance/Pages/profile_page.dart';
 import 'Package:mattendance/Pages/RequestAbsence/request_absence_page.dart';
 import 'Package:mattendance/Pages/notifications.dart';
-import 'Package:mattendance/Pages/edit_assign.dart';
+import 'Package:mattendance/Pages/edit_assigned_office.dart';
 
 
 class BottomNavBar extends StatefulWidget{

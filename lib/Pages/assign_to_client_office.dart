@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:mattendance/Pages/DatabaseManager.dart';
-import 'package:mattendance/Pages/edit_assign.dart';
+import 'package:mattendance/Pages/edit_assigned_office.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
