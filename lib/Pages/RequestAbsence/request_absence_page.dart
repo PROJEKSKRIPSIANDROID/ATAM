@@ -122,29 +122,13 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   addToReqAbsence();
-                  /*showDialog(context: context,
-                      builder: (BuildContext context) => CupertinoAlertDialog(
-                        title: Text('sukses')
-                      )
-                  );*/
                   CoolAlert.show(
                     context: context,
                     type: CoolAlertType.success,
                     text: "Your request was successful!",
+                      onConfirmBtnTap: () => Navigator.of(context).pop()
                   );
-
                   _formKey.currentState.save();//save once fields are valid, onSaved method invoked for every form fields
-                  CoolAlert.show(
-                    context: context,
-                    type: CoolAlertType.success,
-                    text: "Your request was successful!",
-                      onConfirmBtnTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EmployeeMainMenu(),
-                          ))
-                  );
-
                 } else {
                   setState(() {
                     _autovalidate = true; //enable realtime validation
