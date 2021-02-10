@@ -132,7 +132,7 @@ class _ListPageState extends State<ListPage> {
                               );
                             });
                           },
-                            child: Text("Approve"),
+                            child: Text("Approve", style: TextStyle(fontSize: 12),),
                             color: Colors.blue,textColor: Colors.white,)),
                           Expanded(child: RaisedButton(onPressed: () {
                             setState(() {
@@ -150,7 +150,7 @@ class _ListPageState extends State<ListPage> {
                             });
 
                           },
-                            child: Text("Reject"),
+                            child: Text("Reject", style: TextStyle(fontSize: 12),),
                             color: Colors.red,textColor: Colors.white,)),
                         ]
                     ),
