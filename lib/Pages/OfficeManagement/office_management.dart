@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mattendance/Pages/OfficeManagement/add_edit_office.dart';
 
 class OfficeManagement extends StatefulWidget {
@@ -142,12 +143,29 @@ class _OfficeManagement extends State<OfficeManagement> {
 
 
   Future<void> deleteOffice(String docId) {
-    CollectionReference officeLoc = FirebaseFirestore.instance.collection('ref_office_location');
-    return officeLoc
-        .doc(docId)
-        .delete()
-        .then((value) => print("Office Deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
+
+    //Validate if office still assigned to user
+    FirebaseFirestore.instance
+        .collection('users')
+        .where('office', isEqualTo: officeName)
+        .get()
+        .then((QuerySnapshot documentSnapshot){
+
+            if(documentSnapshot == null){
+              CollectionReference officeLoc = FirebaseFirestore.instance.collection('ref_office_location');
+              return officeLoc
+                  .doc(docId)
+                  .delete()
+                  .then((value) => print("Office Deleted"))
+                  .catchError((error) => print("Failed to delete Office Data: $error"));
+            }else{
+              EasyLoading.showError('Failed to delete office\n Unassign users from office first',);
+              return null;
+            }
+        });
+
+    //if function not returning anything
+    return EasyLoading.showError('Error');
   }
 
   void _searchPressed() {

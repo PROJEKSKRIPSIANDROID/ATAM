@@ -151,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
                             child: Text("No"),
                             onPressed: () {Navigator.of(context).pop();},),
                           CupertinoDialogAction(
-                            child: Text("Yes"),
+                            child: Text("Yes",style: TextStyle(color: Colors.red),),
                           onPressed: () {
                             _signOut();
                             Navigator.popUntil(context, ModalRoute.withName("/"));

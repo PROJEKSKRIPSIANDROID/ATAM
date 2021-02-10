@@ -79,7 +79,7 @@ class EmployeeProfile extends StatelessWidget {
                               child: Text("No"),
                               onPressed: () {Navigator.of(context).pop();},),
                             CupertinoDialogAction(
-                                child: Text("Yes"),
+                                child: Text("Yes",style: TextStyle(color: Colors.red),),
                                 onPressed: () {
                                   FirebaseAuth.instance.signOut().then(
                                           (_) => Navigator.popUntil(context, ModalRoute.withName("/")));

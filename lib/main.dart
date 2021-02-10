@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mattendance/Pages/attendance_history_screen.dart';
 import 'package:mattendance/Pages/employee_main_menu.dart';
 import 'package:mattendance/Pages/home_page.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
         }
         return LoginScreen();
       }),
+      builder: EasyLoading.init(),
     );
   }
 }
