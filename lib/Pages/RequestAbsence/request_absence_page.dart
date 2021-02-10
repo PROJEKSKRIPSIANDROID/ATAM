@@ -100,6 +100,11 @@ class _RequestAbsencePage extends State<RequestAbsencePage> {
                     initialCalendarFormat: CalendarFormat.month,
                     calendarController: _controller,
                     startingDayOfWeek: StartingDayOfWeek.monday,
+                    enabledDayPredicate: (day) {
+                          if(day.weekday == 6 || day.weekday == 7) {
+                            return false;
+                          }else return true;
+                    },
                   ),
                 ),
               ],
