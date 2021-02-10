@@ -154,11 +154,7 @@ class ProfileScreen extends StatelessWidget {
                             child: Text("Yes"),
                           onPressed: () {
                             _signOut();
-                            //Navigator.of(context).pop();
-                            Navigator.of(context).pushReplacementNamed('/login');
-/*                                  FirebaseAuth.instance.signOut().then(
-                                          (_) => Navigator.of(context).pushReplacementNamed('/login'));*/
-
+                            Navigator.popUntil(context, ModalRoute.withName("/"));
                           })
                         ],
                     )

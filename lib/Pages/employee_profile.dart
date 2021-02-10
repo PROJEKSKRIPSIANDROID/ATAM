@@ -82,7 +82,7 @@ class EmployeeProfile extends StatelessWidget {
                                 child: Text("Yes"),
                                 onPressed: () {
                                   FirebaseAuth.instance.signOut().then(
-                                          (_) => Navigator.of(context).pushReplacementNamed('/login'));
+                                          (_) => Navigator.popUntil(context, ModalRoute.withName("/")));
                                 })
                           ],
                         )
