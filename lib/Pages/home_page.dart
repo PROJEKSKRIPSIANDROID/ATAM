@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart' as a;
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -235,8 +235,24 @@ class _HomePage extends State<HomePage>{
       }
     }
   }
+  //endregion
 
+  //get user location
+  Future<void> getUserLocation() async {
+    a.Position currentPosition;
+    a.Position position = await a.Geolocator.getCurrentPosition(desiredAccuracy: a.LocationAccuracy.high);
+    currentPosition = position;
+    LatLng latLongPosition = LatLng(position.latitude, position.longitude);
+    CameraPosition cameraPosition =
+    new CameraPosition(target: latLongPosition, zoom: 14);
+    newGoogleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
+    String uId = FirebaseAuth.instance.currentUser.uid.toString();
+    FirebaseFirestore.instance.collection('users').doc(uId).update({
+      'user_location': GeoPoint(position.latitude, position.longitude),
+    });
+  }
   //endregion
 
 
@@ -267,7 +283,7 @@ class _HomePage extends State<HomePage>{
               onMapCreated: (GoogleMapController controller){
                 _controllerGoogleMap.complete(controller);
                 newGoogleMapController = controller;
-                //getUserLocation();
+                getUserLocation();
               },
             ),
          ),
@@ -317,7 +333,7 @@ class _HomePage extends State<HomePage>{
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         height: 60,
-                        width: 180,
+                        width: 150,
                         decoration: new BoxDecoration(
                           color: Colors.white,
                           borderRadius: new BorderRadius.only(
@@ -352,7 +368,7 @@ class _HomePage extends State<HomePage>{
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         height: 60,
-                        width: 180,
+                        width: 150,
                         decoration: new BoxDecoration(
                           color: Colors.white,
                           borderRadius: new BorderRadius.only(

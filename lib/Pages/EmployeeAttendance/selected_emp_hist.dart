@@ -13,8 +13,6 @@ class SelectedEmpHist extends StatefulWidget {
 List<dynamic> _selectedEvents = [];
 
 class _SelectedEmpHist extends State<SelectedEmpHist> {
-  @override
-
   CalendarController _controller;
 
   DateTime _selectedDay = DateTime.now();
@@ -29,8 +27,30 @@ class _SelectedEmpHist extends State<SelectedEmpHist> {
   }
 
   Map<DateTime, List<dynamic>> dateEvents = {};
+  //List<Widget> get _eventWidgets => _selectedEvents.map((e) => attendanceHist(e)).toList();
 
-  void fetchEvents() async{
+  Widget attendanceHist(var d){
+    return Container(
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+      child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+          decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Theme.of(context).dividerColor),
+              )),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children:[
+                Text('Clock In :'),
+                Text(d,
+                    style:
+                    Theme.of(context).primaryTextTheme.bodyText1),
+              ]) ),
+    );  }
+
+
+  void fetchEvents(){
     dateEvents = {};
     var selectedUser = widget.post.data()['user_id'].toString();
 
@@ -50,7 +70,21 @@ class _SelectedEmpHist extends State<SelectedEmpHist> {
         }
       });
     });
-    setState(() {});
+  }
+
+  Future<DocumentSnapshot> getAttendanceDetail() async {
+    DocumentSnapshot doc;
+    if(_selectedEvents.length > 0){
+      return (await FirebaseFirestore.instance
+          .collection('attendance_history')
+          .doc(_selectedEvents[0].toString())
+          .get());
+    }else{
+      clockIn = '-';
+      clockOut = '-';
+      status = 'Mangkir';
+      return doc;
+    }
   }
 
   Widget build(BuildContext context) {
@@ -60,14 +94,21 @@ class _SelectedEmpHist extends State<SelectedEmpHist> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Color.fromRGBO(255, 240, 245, 10),
-        title: Row(
+        title: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: Text(
+              username + " Attendance History",
+              style: TextStyle(color: Colors.black),
+            )
+        ),
+        /*title: Row(
           children: <Widget>[
             Text(
               username + "'s Attendance History",
               style: TextStyle(color: Colors.black),
             )
           ],
-        ),
+        ),*/
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -82,14 +123,16 @@ class _SelectedEmpHist extends State<SelectedEmpHist> {
                 setState(() {
                   _selectedDay = day;
                   _selectedEvents = events;
-
-                  if(_selectedEvents.length != 0){
-                    FirebaseFirestore.instance
-                        .collection('attendance_history')
-                        .doc(_selectedEvents[0].toString())
-                        .get()
-                        .then((DocumentSnapshot documentSnapshot) {
-                      var data = documentSnapshot.data();
+                });
+              },
+              events: dateEvents,
+            ),
+            FutureBuilder(
+                future: getAttendanceDetail(),
+                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+                  if (snapshot.hasData) {
+                    if(_selectedEvents.length != 0){
+                      var data = snapshot.data;
 
                       if(data['clock_in'].toString().isNotEmpty){
                         Timestamp clockInTimestamp = data['clock_in'];
@@ -108,27 +151,30 @@ class _SelectedEmpHist extends State<SelectedEmpHist> {
                       if(data['status'].toString().isNotEmpty){
                         status = data['status'].toString();
                       }else{
-                        status = 'Work';
+                        status = 'Ok';
                       }
-                      AttendanceDetail();
-                    });
-                  }else{
-                    clockIn = '-';
-                    clockOut = '-';
-                    status = 'Mangkir';
+                      return AttendanceDetail(clockIn: clockIn,clockOut: clockOut,status: status,);
+                    }else{
+                      return AttendanceDetail(clockIn: clockIn,clockOut: clockOut,status: status,);
+                    }
                   }
-                });
-              },
-              events: dateEvents,
-            ),
-            AttendanceDetail(clockIn: clockIn,clockOut: clockOut,status: status,),
+                  else{
+                    if(_selectedEvents.length == 0){
+                      return AttendanceDetail(clockIn: clockIn,clockOut: clockOut,status: status,);
+                    }
+                    else{
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  }
+                }),
             //Column(children:_eventWidgets)
           ],
         ),
       ),
     );
   }
-
 }
 
 

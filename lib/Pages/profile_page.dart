@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mattendance/Pages/EmployeeAttendance/employee_attendance_hist.dart';
 import 'package:mattendance/Pages/MonitoringEmployee/monitoring_employee_location.dart';
 import 'package:mattendance/Pages/OfficeManagement/office_management.dart';
-import 'package:mattendance/Pages/deptHead_attendance_history.dart';
+import 'package:mattendance/Pages/attendance_history_screen.dart';
 import 'package:mattendance/Pages/main_menu.dart';
 import 'package:mattendance/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,10 +74,10 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(29),
                 child: FlatButton(
                   color: Colors.blue[600],
-                  padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  padding: EdgeInsets.symmetric(vertical: 16,horizontal: 40),
                   child: Text('My Attendance History',style: TextStyle(color: Colors.white,fontSize: 20),),
                   onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => DeptHeadAttendanceHistory()));//authenticationBloc.dispatch(LoggedOut());
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AttendanceHistory()));//authenticationBloc.dispatch(LoggedOut());
                   },
                 )
             ),
@@ -90,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(29),
                 child: FlatButton(
                   color: Colors.blue[600],
-                  padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  padding: EdgeInsets.symmetric(vertical: 16,horizontal: 40),
                   child: Text('Client Office Management',style: TextStyle(color: Colors.white,fontSize: 20),),
                   onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context) => OfficeManagement()));//authenticationBloc.dispatch(LoggedOut());
@@ -106,7 +106,7 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(29),
                 child: FlatButton(
                   color: Colors.blue[600],
-                  padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  padding: EdgeInsets.symmetric(vertical: 16,horizontal: 40),
                   child: Text('Monitoring Employee Location',style: TextStyle(color: Colors.white,fontSize: 20),),
                   onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context) => MonitoringEmployeeLocation()));//authenticationBloc.dispatch(LoggedOut());
@@ -122,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(29),
                 child: FlatButton(
                   color: Colors.blue[600],
-                  padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  padding: EdgeInsets.symmetric(vertical: 16,horizontal: 40),
                   child: Text('Employee Attendance History',style: TextStyle(color: Colors.white,fontSize: 20),),
                   onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context) => EmployeeAttendanceHist()));//authenticationBloc.dispatch(LoggedOut());
@@ -138,7 +138,7 @@ class ProfileScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(29),
               child: FlatButton(
                 color: Colors.blue[600],
-                padding: EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                padding: EdgeInsets.symmetric(vertical: 16,horizontal: 40),
                 child: Text('Sign Out',style: TextStyle(color: Colors.white,fontSize: 20),),
                 onPressed: (){
                   showDialog(

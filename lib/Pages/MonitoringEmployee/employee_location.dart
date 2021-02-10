@@ -45,14 +45,21 @@ class _EmployeeLocation extends State<EmployeeLocation> {
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.black),
           backgroundColor: Color.fromRGBO(255, 240, 245, 10),
-          title: Row(
+          title: FittedBox(
+              fit: BoxFit.fitWidth,
+              child: Text(
+                username + " Location",
+                style: TextStyle(color: Colors.black),
+              )
+          ),
+          /*title: Row(
             children: <Widget>[
               Text(
                 username + "'s Location",
                 style: TextStyle(color: Colors.black),
               )
             ],
-          ),
+          ),*/
         ),
         body: Stack(
           children: <Widget>[
