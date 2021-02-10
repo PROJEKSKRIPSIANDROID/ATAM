@@ -205,7 +205,7 @@ class _HomePage extends State<HomePage>{
           var clockOutRange2End =new DateTime(timeNow.year, timeNow.month, timeNow.day, 6, 0, 0, 0, 0);
           //Validate user distance from office
           //Clock-in
-          if(totalDistance < 0.15 && todayData == null && (timeNow.compareTo(clockInRangeStart) > 0 && timeNow.compareTo(clockInRangeEnd) < 0)){
+          if(totalDistance < 0.15 && todayData == null){
 
             CollectionReference attendanceHist = FirebaseFirestore.instance.collection(
                 'attendance_history');
