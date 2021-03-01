@@ -84,6 +84,7 @@ class _HomePage extends State<HomePage>{
     if(todayDate.weekday == 6 || todayDate.weekday == 7){
       clockIn = 'OFF';
       clockOut = 'OFF';
+      initiateLocation();
     }else{
       initiateLocation();
     }
@@ -139,7 +140,8 @@ class _HomePage extends State<HomePage>{
 
     QuerySnapshot reqA = await _db
         .collection("attendance_history")
-        .where('attendance_date', isGreaterThanOrEqualTo: DateTime(todayDate.year, todayDate.month, todayDate.day))
+        .where('attendance_date', isEqualTo: DateTime(todayDate.year, todayDate.month, todayDate.day))
+        .where('user_id', isEqualTo: user)
         .get();
     List<QueryDocumentSnapshot> listData = reqA.docs.toList();
     if(listData.isNotEmpty){
@@ -150,7 +152,7 @@ class _HomePage extends State<HomePage>{
           clockIn = DateFormat('HH:mm').format(clockInTimestamp.toDate()).toString();
 
           //Jika sudah clock-out
-          if(todayData['clock_out'] != null){
+          if(todayData['clock_out'] != ""){
             Timestamp clockOutTimestamp = todayData['clock_out'];
             clockOut = DateFormat('HH:mm').format(clockOutTimestamp.toDate()).toString();
           }
@@ -197,15 +199,14 @@ class _HomePage extends State<HomePage>{
           totalDistance = calculateDistance(officeLat, officeLong, newLocalData.latitude, newLocalData.longitude);
 
           var timeNow = DateTime.now();
-          var clockInRangeStart = new DateTime(timeNow.year, timeNow.month, timeNow.day, 6, 0, 0, 0, 0);
-          var clockInRangeEnd = new DateTime(timeNow.year, timeNow.month, timeNow.day, 12, 0, 0, 0, 0);
           var clockOutRange1Start = new DateTime(timeNow.year, timeNow.month, timeNow.day, 15, 0, 0, 0, 0);
           var clockOutRange1End =new DateTime(timeNow.year, timeNow.month, timeNow.day, 24, 0, 0, 0, 0);
           var clockOutRange2Start = new DateTime(timeNow.year, timeNow.month, timeNow.day, 0, 0, 0, 0, 0);
           var clockOutRange2End =new DateTime(timeNow.year, timeNow.month, timeNow.day, 6, 0, 0, 0, 0);
+
           //Validate user distance from office
           //Clock-in
-          if(totalDistance < 0.15 && todayData == null){
+            if(totalDistance < 0.15 && todayData == null){
 
             CollectionReference attendanceHist = FirebaseFirestore.instance.collection(
                 'attendance_history');
@@ -218,13 +219,13 @@ class _HomePage extends State<HomePage>{
             }).then((value) => getTodayData());
 
             //Clock-out
-          }else if (totalDistance > 0.15 && todayData != null &&
-              ((timeNow.compareTo(clockOutRange1Start) > 0 && timeNow.compareTo(clockOutRange1End) < 0) ||
-                  (timeNow.compareTo(clockOutRange2Start) > 0 && timeNow.compareTo(clockOutRange2End) < 0))){
+          }else if (totalDistance > 0.15 && todayData != null
+                && ((timeNow.compareTo(clockOutRange1Start) > 0 && timeNow.compareTo(clockOutRange1End) < 0) || (timeNow.compareTo(clockOutRange2Start) > 0 && timeNow.compareTo(clockOutRange2End) < 0))
+                && clockOut == null){
             FirebaseFirestore _db = FirebaseFirestore.instance;
-            _db.collection("ref_office_location").doc(todayData.id).update({
+            _db.collection("attendance_history").doc(todayData.id).update({
               'clock_out': DateTime.parse(timeNow.toString()),
-            });
+            }).then((value) => getTodayData());
           }
         }
       });
@@ -235,7 +236,6 @@ class _HomePage extends State<HomePage>{
       }
     }
   }
-  //endregion
 
   //get user location
   Future<void> getUserLocation() async {
@@ -254,7 +254,6 @@ class _HomePage extends State<HomePage>{
     });
   }
   //endregion
-
 
   //region Widget
   Widget build(BuildContext context) {
