@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -40,6 +41,7 @@ class _HomePage extends State<HomePage>{
   static const LatLng _center = const LatLng(-6.283890, 106.918980);
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController newGoogleMapController;
+  Set<Circle> radiusCircle = HashSet<Circle>();
   //endregion
 
   //region State
@@ -48,7 +50,7 @@ class _HomePage extends State<HomePage>{
     initiateData();
     getTodayData();
     realtimeDate();
-
+    getCurrentLocation();
     super.initState();
   }
 
@@ -84,7 +86,6 @@ class _HomePage extends State<HomePage>{
     if(todayDate.weekday == 6 || todayDate.weekday == 7){
       clockIn = 'OFF';
       clockOut = 'OFF';
-      initiateLocation();
     }else{
       initiateLocation();
     }
@@ -122,6 +123,7 @@ class _HomePage extends State<HomePage>{
                       title: officeName
                   )
               ));
+              setRadiusCircle(LatLng(officeLat,officeLong));
             });
           });
         });
@@ -253,6 +255,19 @@ class _HomePage extends State<HomePage>{
       'user_location': GeoPoint(position.latitude, position.longitude),
     });
   }
+
+  //set radius circle to office location
+  void setRadiusCircle(LatLng point) {
+    String circleId = 'officeRadius';
+    radiusCircle.add(Circle(
+        circleId: CircleId(circleId),
+        center: LatLng(officeLat,officeLong),
+        radius: 0.15 * 100,
+        visible: true,
+        fillColor: Colors.redAccent.withOpacity(0.5),
+        strokeWidth: 3,
+        strokeColor: Colors.redAccent));
+  }
   //endregion
 
   //region Widget
@@ -267,11 +282,6 @@ class _HomePage extends State<HomePage>{
       body: Stack(
         children: <Widget>[
          Listener(
-           onPointerDown: (e){
-             if(streamSubscription != null){
-               streamSubscription.cancel();
-             }
-           },
            child: new GoogleMap(
               initialCameraPosition: CameraPosition(target: _center, zoom: 11.0),
               zoomControlsEnabled: true,
@@ -279,6 +289,7 @@ class _HomePage extends State<HomePage>{
               zoomGesturesEnabled: true,
               mapType: MapType.normal,
               markers: Set.from(markers),
+              circles: radiusCircle,
               onMapCreated: (GoogleMapController controller){
                 _controllerGoogleMap.complete(controller);
                 newGoogleMapController = controller;
@@ -404,14 +415,6 @@ class _HomePage extends State<HomePage>{
             ),
           ),
         ],
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.fromLTRB(0,0,50,0),
-        child: FloatingActionButton(
-            child: Icon(Icons.location_searching),
-            onPressed: () {
-              getCurrentLocation();
-            }),
       ),
     );
   }
