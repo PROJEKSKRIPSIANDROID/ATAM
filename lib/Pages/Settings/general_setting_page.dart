@@ -29,7 +29,7 @@ class _GeneralSettingState extends State<GeneralSetting> {
               FirebaseFirestore _db = FirebaseFirestore.instance;
               _db.collection("general_setting").doc(docId).update({
                 'dtm_upd': DateTime.now(),
-                'usr_crt': FirebaseAuth.instance.currentUser.uid,
+                'usr_upd': FirebaseAuth.instance.currentUser.uid,
                 'setting_value': textController.text,
               });
 
