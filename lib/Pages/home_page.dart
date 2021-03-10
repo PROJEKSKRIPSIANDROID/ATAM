@@ -42,6 +42,7 @@ class _HomePage extends State<HomePage>{
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController newGoogleMapController;
   Set<Circle> radiusCircle = HashSet<Circle>();
+  double radius;
   //endregion
 
   //region State
@@ -208,7 +209,7 @@ class _HomePage extends State<HomePage>{
 
           //Validate user distance from office
           //Clock-in
-            if(totalDistance < 0.15 && todayData == null){
+            if(totalDistance < radius / 100 && todayData == null){
 
             CollectionReference attendanceHist = FirebaseFirestore.instance.collection(
                 'attendance_history');
@@ -221,7 +222,7 @@ class _HomePage extends State<HomePage>{
             }).then((value) => getTodayData());
 
             //Clock-out
-          }else if (totalDistance > 0.15 && todayData != null
+          }else if (totalDistance > radius / 100 && todayData != null
                 && ((timeNow.compareTo(clockOutRange1Start) > 0 && timeNow.compareTo(clockOutRange1End) < 0) || (timeNow.compareTo(clockOutRange2Start) > 0 && timeNow.compareTo(clockOutRange2End) < 0))
                 && clockOut == null){
             FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -258,15 +259,25 @@ class _HomePage extends State<HomePage>{
 
   //set radius circle to office location
   void setRadiusCircle(LatLng point) {
-    String circleId = 'officeRadius';
-    radiusCircle.add(Circle(
-        circleId: CircleId(circleId),
-        center: LatLng(officeLat,officeLong),
-        radius: 0.15 * 100,
-        visible: true,
-        fillColor: Colors.redAccent.withOpacity(0.5),
-        strokeWidth: 3,
-        strokeColor: Colors.redAccent));
+    FirebaseFirestore.instance
+        .collection('general_setting')
+        .where('setting_name', isEqualTo: 'Set Circle Radius')
+        .get()
+        .then((QuerySnapshot documentSnapshot) {
+      documentSnapshot.docs.forEach((item) {
+        radius = double.parse(item['setting_value'].toString());
+        String circleId = 'officeRadius';
+        
+        radiusCircle.add(Circle(
+            circleId: CircleId(circleId),
+            center: LatLng(officeLat,officeLong),
+            radius: radius,
+            visible: true,
+            fillColor: Colors.redAccent.withOpacity(0.5),
+            strokeWidth: 3,
+            strokeColor: Colors.redAccent));
+      });
+    });
   }
   //endregion
 
