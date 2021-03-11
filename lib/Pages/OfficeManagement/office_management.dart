@@ -278,10 +278,13 @@ class _OfficeManagement extends State<OfficeManagement> {
 
   Future<List<QueryDocumentSnapshot>> getOfficeData() async {
     var dataCollection = FirebaseFirestore.instance;
+    QuerySnapshot officeSnapshot;
+    if(listOffice == null){
+      officeSnapshot = await dataCollection
+          .collection("ref_office_location")
+          .get();
+    }
 
-    QuerySnapshot officeSnapshot = await dataCollection
-        .collection("ref_office_location")
-        .get();
     listOffice = officeSnapshot.docs.toList();
     filteredNames = listOffice;
     return listOffice;
