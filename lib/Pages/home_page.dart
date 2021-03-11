@@ -188,7 +188,7 @@ class _HomePage extends State<HomePage>{
         streamSubscription.cancel();
       }
 
-      streamSubscription = _locationTracker.onLocationChanged.listen((newLocalData) {
+      streamSubscription = await _locationTracker.onLocationChanged.listen((newLocalData) {
         if (_controller != null) {
           //newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(new CameraPosition(
           //    bearing: 192.8334901395799,
@@ -206,30 +206,35 @@ class _HomePage extends State<HomePage>{
           var clockOutRange1End =new DateTime(timeNow.year, timeNow.month, timeNow.day, 24, 0, 0, 0, 0);
           var clockOutRange2Start = new DateTime(timeNow.year, timeNow.month, timeNow.day, 0, 0, 0, 0, 0);
           var clockOutRange2End =new DateTime(timeNow.year, timeNow.month, timeNow.day, 6, 0, 0, 0, 0);
-
+          var clockInRadius = radius / 1000;
+          int flag = 0;
           //Validate user distance from office
           //Clock-in
-            if(totalDistance < radius / 100 && todayData == null){
+          if(totalDistance < clockInRadius && todayData == null){
 
             CollectionReference attendanceHist = FirebaseFirestore.instance.collection(
                 'attendance_history');
-            attendanceHist.add({
+             attendanceHist.add({
               'attendance_date': new DateTime(timeNow.year, timeNow.month, timeNow.day, 0, 0, 0, 0, 0), // 0 = format to date only
               'clock_in': DateTime.parse(timeNow.toString()),
               'clock_out': '',
               'status': 'Work',
               'user_id': user
-            }).then((value) => getTodayData());
-
+            });
+             flag = 1;
             //Clock-out
-          }else if (totalDistance > radius / 100 && todayData != null
+          }else if (totalDistance > clockInRadius && todayData != null
                 && ((timeNow.compareTo(clockOutRange1Start) > 0 && timeNow.compareTo(clockOutRange1End) < 0) || (timeNow.compareTo(clockOutRange2Start) > 0 && timeNow.compareTo(clockOutRange2End) < 0))
                 && clockOut == null){
             FirebaseFirestore _db = FirebaseFirestore.instance;
             _db.collection("attendance_history").doc(todayData.id).update({
               'clock_out': DateTime.parse(timeNow.toString()),
-            }).then((value) => getTodayData());
+            });
+            flag = 1;
           }
+
+          if(flag == 1)
+            getTodayData();
         }
       });
 
