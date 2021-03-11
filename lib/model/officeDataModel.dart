@@ -35,9 +35,3 @@ class ClientOffice {
     );
   }
 }
-
-enum PlaceCategory {
-  favorite,
-  visited,
-  wantToGo,
-}

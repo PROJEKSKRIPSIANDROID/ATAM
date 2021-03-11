@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mattendance/Pages/OfficeManagement/add_edit_office.dart';
+import 'package:mattendance/model/officeDataModel.dart';
 
 class OfficeManagement extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class OfficeManagement extends StatefulWidget {
 
 class _OfficeManagement extends State<OfficeManagement> {
   final TextEditingController _filter = new TextEditingController();
+  List<QueryDocumentSnapshot> listOffice;
   String _searchText = "";
   List names = new List();
   List filteredNames = new List();
@@ -18,7 +20,21 @@ class _OfficeManagement extends State<OfficeManagement> {
   String docId = "";
   String officeName = "";
 
-  @override
+  _OfficeManagement() {
+    _filter.addListener(() {
+      if (_filter.text.isEmpty) {
+        setState(() {
+          _searchText = "";
+          filteredNames = names;
+        });
+      } else {
+        setState(() {
+          _searchText = _filter.text;
+        });
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -51,32 +67,48 @@ class _OfficeManagement extends State<OfficeManagement> {
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
-        child: StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('ref_office_location').snapshots(),
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-              if(!snapshot.hasData){
-                return Container(
-                    color: Colors.red,
-                    height: 200,
-                    width: 200,
-                    child: Text("No Data"));
+        child: FutureBuilder(
+          future: getOfficeData(),
+          builder: (context, snapshot) {
+            if(listOffice == null){
+              return Container(
+                  color: Colors.red,
+                  height: 200,
+                  width: 200,
+                  child: Text("Loading .. "));
+            }else if(listOffice.isEmpty){
+              return Container(
+                  color: Colors.red,
+                  height: 200,
+                  width: 200,
+                  child: Text("No Data"));
+            }
+
+            if (_searchText.isNotEmpty) {
+              List tempList = new List();
+              for (int i = 0; i < listOffice.length; i++) {
+                if (listOffice[i]['office_name'].toLowerCase().contains(_searchText.toLowerCase())) {
+                  tempList.add(listOffice[i]);
+                }
               }
-              return ListView(
-                children: snapshot.data.docs.map((document) {
-                  return Card(
-                    elevation: 5,
-                    margin: EdgeInsets.fromLTRB(5, 8, 5, 0),
-                    child: ListTile(
-                        leading: Icon(
-                            Icons.business_rounded
-                        ),
-                        title: Text(document['office_name'],
-                          style: Theme.of(context).textTheme.title,
-                        ),
-                        trailing: Wrap(
-                          spacing: -5,
-                          children: <Widget>[
-                            IconButton(
+              filteredNames = tempList;
+            }
+            return ListView(
+              children: filteredNames.map((document) {
+                return Card(
+                  elevation: 5,
+                  margin: EdgeInsets.fromLTRB(5, 8, 5, 0),
+                  child: ListTile(
+                      leading: Icon(
+                          Icons.business_rounded
+                      ),
+                      title: Text(document['office_name'],
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      trailing: Wrap(
+                        spacing: -5,
+                        children: <Widget>[
+                          IconButton(
                               icon: Icon(Icons.edit),
                               color: Colors.black,
                               onPressed: () {
@@ -84,26 +116,87 @@ class _OfficeManagement extends State<OfficeManagement> {
                                 docId = document.id;
                                 addOrEditOffice('Edit', context);
                               }
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.delete),
-                              color: Theme.of(context).errorColor,
-                              onPressed: (){
-                                officeName = document['office_name'].toString();
-                                docId = document.id;
-                                deleteConfirmDialog(context);
-                              },
-                            ),
-                          ],
-                        )
-                    ),
-                  );
-                }).toList(),
-              );
-            }
-        ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            color: Theme.of(context).errorColor,
+                            onPressed: (){
+                              officeName = document['office_name'].toString();
+                              docId = document.id;
+                              deleteConfirmDialog(context);
+                            },
+                          ),
+                        ],
+                      )
+                  ),
+                );
+              }).toList(),
+            );
+          }
+          ,
+        )
       )
     );
+  }
+
+  Widget bodyWidget(){
+    if(listOffice.isEmpty){
+      return Container(
+          color: Colors.red,
+          height: 200,
+          width: 200,
+          child: Text("No Data"));
+    }
+
+    if (_searchText.isNotEmpty) {
+      List tempList = new List();
+      for (int i = 0; i < listOffice.length; i++) {
+        if (listOffice[i]['office_name'].toLowerCase().contains(_searchText.toLowerCase())) {
+          tempList.add(listOffice[i]);
+        }
+      }
+      filteredNames = tempList;
+    }
+    return ListView(
+      children: filteredNames.map((document) {
+        return Card(
+          elevation: 5,
+          margin: EdgeInsets.fromLTRB(5, 8, 5, 0),
+          child: ListTile(
+              leading: Icon(
+                  Icons.business_rounded
+              ),
+              title: Text(document['office_name'],
+                style: Theme.of(context).textTheme.title,
+              ),
+              trailing: Wrap(
+                spacing: -5,
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.edit),
+                      color: Colors.black,
+                      onPressed: () {
+                        officeName = document['office_name'].toString();
+                        docId = document.id;
+                        addOrEditOffice('Edit', context);
+                      }
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    color: Theme.of(context).errorColor,
+                    onPressed: (){
+                      officeName = document['office_name'].toString();
+                      docId = document.id;
+                      deleteConfirmDialog(context);
+                    },
+                  ),
+                ],
+              )
+          ),
+        );
+      }).toList(),
+    );
+
   }
 
   deleteConfirmDialog(BuildContext context) {
@@ -161,9 +254,6 @@ class _OfficeManagement extends State<OfficeManagement> {
       EasyLoading.showError('Failed to delete office\n Unassign users from office first',);
       return null;
     }
-
-    //if function not returning anything
-    return EasyLoading.showError('Error');
   }
 
   void _searchPressed() {
@@ -184,6 +274,17 @@ class _OfficeManagement extends State<OfficeManagement> {
         _filter.clear();
       }
     });
+  }
+
+  Future<List<QueryDocumentSnapshot>> getOfficeData() async {
+    var dataCollection = FirebaseFirestore.instance;
+
+    QuerySnapshot officeSnapshot = await dataCollection
+        .collection("ref_office_location")
+        .get();
+    listOffice = officeSnapshot.docs.toList();
+    filteredNames = listOffice;
+    return listOffice;
   }
 
   void addOrEditOffice(String mode, BuildContext context) {
