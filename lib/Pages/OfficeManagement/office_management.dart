@@ -25,7 +25,7 @@ class _OfficeManagement extends State<OfficeManagement> {
       if (_filter.text.isEmpty) {
         setState(() {
           _searchText = "";
-          filteredNames = names;
+          filteredNames = listOffice;
         });
       } else {
         setState(() {
@@ -290,19 +290,22 @@ class _OfficeManagement extends State<OfficeManagement> {
     return listOffice;
   }
 
-  void addOrEditOffice(String mode, BuildContext context) {
-    setState((){
-      String title;
-      if (mode == 'Add') {
-        title = 'Add New Office';
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditOffice(pageTitle: title,)));
-      }
+  void addOrEditOffice(String mode, BuildContext context) async {
+    String title;
+    if (mode == 'Add') {
+      title = 'Add New Office';
+      Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditOffice(pageTitle: title,)));
+    }
 
-      if(mode == 'Edit') {
-        title = 'Edit Office';
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditOffice(pageTitle: title,docId: docId,)));
+    if(mode == 'Edit') {
+      title = 'Edit Office';
+      dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditOffice(pageTitle: title,docId: docId,)));
+      if(result != null) {
+        setState(() {
+          listOffice = null;
+        });
       }
-    });
+    }
   }
 }
 

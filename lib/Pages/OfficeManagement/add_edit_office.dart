@@ -110,6 +110,7 @@ class AddEditOfficeState extends State<AddEditOffice> {
       return;
     }
 
+    String officeMode;
     //Check if dooId, then state = Edit Data
     if (widget.docId != null){
       FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -118,6 +119,7 @@ class AddEditOfficeState extends State<AddEditOffice> {
         'office_address': addressNameController.text,
         'office_coordinates': GeoPoint(officeLat, officeLong)
       });
+      officeMode = 'Edit';
     }
     //Add Data
     else
@@ -130,7 +132,7 @@ class AddEditOfficeState extends State<AddEditOffice> {
         'office_coordinates': GeoPoint(officeLat, officeLong)
       });
     }
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(officeMode);
   }
 
   Widget addEditOfficeBody() {
