@@ -58,13 +58,33 @@ class ProfileScreen extends StatelessWidget {
                               children: snapshot.data.docs.map((document){
                                 return Center(
                                   //padding: EdgeInsets.fromLTRB(0, 10, 0,0 ),
-                                  child: Text(document['username'],style: TextStyle(fontSize: 25)),
+                                  child: Text(document['username'],style: TextStyle(fontSize: 25, decoration: TextDecoration.underline)),
                                 );
                               }).toList(),
                             );
                           }
                       )
                   ),
+                  Align(
+                      child: StreamBuilder(
+                          stream: FirebaseFirestore.instance.collection('users').where('user_id', isEqualTo: FirebaseAuth.instance.currentUser.uid).snapshots(),
+                          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                            if(!snapshot.hasData){
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return ListBody(
+                              children: snapshot.data.docs.map((document){
+                                return Center(
+                                  //padding: EdgeInsets.fromLTRB(0, 10, 0,0 ),
+                                  child: Text(document['pos_name'],style: TextStyle(fontSize: 20)),
+                                );
+                              }).toList(),
+                            );
+                          }
+                      )
+                  )
                 ],
               ),
             ),

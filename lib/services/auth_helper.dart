@@ -66,6 +66,7 @@ class _LoginScreen extends State<LoginScreen> {
           'position':'employee',
           'user_id': authResult.user.uid,
           'office': 'AdIns',
+          'pos_name': 'Employee',
         });
       }
     } on PlatformException catch (err) {
