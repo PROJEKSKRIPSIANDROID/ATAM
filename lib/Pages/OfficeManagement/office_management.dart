@@ -50,7 +50,7 @@ class _OfficeManagement extends State<OfficeManagement> {
         ],
       ),
       body: Container(
-        height: 500,
+        height: MediaQuery.of(context).size.height,
         child: StreamBuilder(
             stream: FirebaseFirestore.instance.collection('ref_office_location').snapshots(),
             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -142,27 +142,25 @@ class _OfficeManagement extends State<OfficeManagement> {
   }
 
 
-  Future<void> deleteOffice(String docId) {
+  Future<void> deleteOffice(String docId) async {
 
     //Validate if office still assigned to user
-    FirebaseFirestore.instance
+    var docSnapshot = await FirebaseFirestore.instance
         .collection('users')
         .where('office', isEqualTo: officeName)
-        .get()
-        .then((QuerySnapshot documentSnapshot){
+        .get();
 
-            if(documentSnapshot == null){
-              CollectionReference officeLoc = FirebaseFirestore.instance.collection('ref_office_location');
-              return officeLoc
-                  .doc(docId)
-                  .delete()
-                  .then((value) => print("Office Deleted"))
-                  .catchError((error) => print("Failed to delete Office Data: $error"));
-            }else{
-              EasyLoading.showError('Failed to delete office\n Unassign users from office first',);
-              return null;
-            }
-        });
+    if(docSnapshot.docs.isEmpty || docSnapshot.docs == null){
+      CollectionReference officeLoc = FirebaseFirestore.instance.collection('ref_office_location');
+      return officeLoc
+          .doc(docId)
+          .delete()
+          .then((value) => print("Office Deleted"))
+          .catchError((error) => print("Failed to delete Office Data: $error"));
+    }else{
+      EasyLoading.showError('Failed to delete office\n Unassign users from office first',);
+      return null;
+    }
 
     //if function not returning anything
     return EasyLoading.showError('Error');
