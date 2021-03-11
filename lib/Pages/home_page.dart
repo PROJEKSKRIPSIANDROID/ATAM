@@ -225,7 +225,7 @@ class _HomePage extends State<HomePage>{
             //Clock-out
           }else if (totalDistance > clockInRadius && todayData != null
                 && ((timeNow.compareTo(clockOutRange1Start) > 0 && timeNow.compareTo(clockOutRange1End) < 0) || (timeNow.compareTo(clockOutRange2Start) > 0 && timeNow.compareTo(clockOutRange2End) < 0))
-                && clockOut == null){
+                && clockOut == "-"){
             FirebaseFirestore _db = FirebaseFirestore.instance;
             _db.collection("attendance_history").doc(todayData.id).update({
               'clock_out': DateTime.parse(timeNow.toString()),
