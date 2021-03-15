@@ -79,6 +79,11 @@ class _AttendanceHistory extends State<AttendanceHistory>{
           .collection('attendance_history')
           .doc(_selectedEvents[0].toString())
           .get());
+    }else if(_selectedDay.weekday == 6 || _selectedDay.weekday == 7){
+      clockIn = '-';
+      clockOut = '-';
+      status = 'OFF';
+      return doc;
     }else{
       clockIn = '-';
       clockOut = '-';
@@ -91,6 +96,7 @@ class _AttendanceHistory extends State<AttendanceHistory>{
 
     return Scaffold(
       appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.black),
           backgroundColor: Color.fromRGBO(255, 240, 245, 10),
           title: Row(
             children: <Widget>[

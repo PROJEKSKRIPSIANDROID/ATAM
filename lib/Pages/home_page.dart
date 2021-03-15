@@ -202,6 +202,8 @@ class _HomePage extends State<HomePage>{
           totalDistance = calculateDistance(officeLat, officeLong, newLocalData.latitude, newLocalData.longitude);
 
           var timeNow = DateTime.now();
+          var clockInRangeStart = new DateTime(timeNow.year, timeNow.month, timeNow.day, 6, 0, 0, 0, 0);
+          var clockInRangeEnd = new DateTime(timeNow.year, timeNow.month, timeNow.day, 13, 0, 0, 0, 0);
           var clockOutRange1Start = new DateTime(timeNow.year, timeNow.month, timeNow.day, 15, 0, 0, 0, 0);
           var clockOutRange1End =new DateTime(timeNow.year, timeNow.month, timeNow.day, 24, 0, 0, 0, 0);
           var clockOutRange2Start = new DateTime(timeNow.year, timeNow.month, timeNow.day, 0, 0, 0, 0, 0);
@@ -210,7 +212,7 @@ class _HomePage extends State<HomePage>{
           int flag = 0;
           //Validate user distance from office
           //Clock-in
-          if(totalDistance < clockInRadius && todayData == null){
+          if(totalDistance < clockInRadius && todayData == null && (timeNow.compareTo(clockInRangeStart) > 0 && timeNow.compareTo(clockInRangeEnd) < 0)){
 
             CollectionReference attendanceHist = FirebaseFirestore.instance.collection(
                 'attendance_history');

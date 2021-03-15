@@ -79,6 +79,11 @@ class _SelectedEmpHist extends State<SelectedEmpHist> {
           .collection('attendance_history')
           .doc(_selectedEvents[0].toString())
           .get());
+    }else if(_selectedDay.weekday == 6 || _selectedDay.weekday == 7 || (_selectedDay.month == 1 && _selectedDay.day == 7)){
+      clockIn = '-';
+      clockOut = '-';
+      status = 'OFF';
+      return doc;
     }else{
       clockIn = '-';
       clockOut = '-';
@@ -188,7 +193,6 @@ class AttendanceDetail extends StatelessWidget {
     return new Container(
       child: Column(
         children: [
-          AttendanceDetailBox(text: 'Office Location',value: '-',),
           AttendanceDetailBox(text: 'Clock in',value: clockIn,),
           AttendanceDetailBox(text: 'Clock out',value: clockOut,),
           AttendanceDetailBox(text: 'Status',value: status,),
