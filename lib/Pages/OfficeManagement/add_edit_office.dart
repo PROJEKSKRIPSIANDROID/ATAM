@@ -131,6 +131,7 @@ class AddEditOfficeState extends State<AddEditOffice> {
         'office_address': addressNameController.text,
         'office_coordinates': GeoPoint(officeLat, officeLong)
       });
+      officeMode = 'Add';
     }
     Navigator.of(context).pop(officeMode);
   }

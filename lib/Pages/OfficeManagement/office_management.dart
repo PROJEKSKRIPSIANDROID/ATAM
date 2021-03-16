@@ -216,6 +216,9 @@ class _OfficeManagement extends State<OfficeManagement> {
       child: Text("Delete"),
       onPressed:  () {
         deleteOffice(docId);
+        listOffice = null;
+        setState(() {
+        });
         Navigator.of(context).pop();
         },
     );
@@ -297,7 +300,12 @@ class _OfficeManagement extends State<OfficeManagement> {
     String title;
     if (mode == 'Add') {
       title = 'Add New Office';
-      Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditOffice(pageTitle: title,)));
+      dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditOffice(pageTitle: title,)));
+      if(result != null) {
+        setState(() {
+          listOffice = null;
+        });
+      }
     }
 
     if(mode == 'Edit') {
