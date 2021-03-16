@@ -71,11 +71,14 @@ class _OfficeManagement extends State<OfficeManagement> {
           future: getOfficeData(),
           builder: (context, snapshot) {
             if(listOffice == null){
-              return Container(
+              /*return Container(
                   color: Colors.red,
                   height: 200,
                   width: 200,
-                  child: Text("Loading .. "));
+                  child: Text("Loading .. "));*/
+              return Center(
+                child: Text("Loading..."),
+              );
             }else if(listOffice.isEmpty){
               return Container(
                   color: Colors.red,

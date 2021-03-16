@@ -54,8 +54,11 @@ class _AssignToClientOffice extends State<AssignToClientOffice> {
           stream: FirebaseFirestore.instance.collection('users').snapshots(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
             if(!snapshot.hasData){
-              return Center(
+              /*return Center(
                 child: CircularProgressIndicator(),
+              );*/
+              return Center(
+                child: Text("Loading..."),
               );
             }
             return ListView(
